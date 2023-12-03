@@ -5,8 +5,7 @@ using UnityEngine;
 public class SimulatorSettings : MonoBehaviour
 {
     // The private static variable you want to set
-    public static int numberOfRooms = 0;
-    public static List<string> events;
+    public static int numberOfRooms = 5;
     public static int soundIndex = 0;
     public static bool limitedResources = true;
     public static bool documents = true;

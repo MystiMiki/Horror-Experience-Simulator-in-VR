@@ -17,7 +17,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &6065012601512009087
 Transform:
   m_ObjectHideFlags: 0
@@ -45,7 +45,7 @@ Light:
   m_Type: 0
   m_Shape: 0
   m_Color: {r: 1, g: 0.8819447, b: 0.5707547, a: 1}
-  m_Intensity: 0.7
+  m_Intensity: 0
   m_Range: 7
   m_SpotAngle: 55.36062
   m_InnerSpotAngle: 24.48239
@@ -184,7 +184,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4286506682741822, guid: aeb0d59753e7e99418a1c7604f4808a5, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.02
       objectReference: {fileID: 0}
     - target: {fileID: 4286506682741822, guid: aeb0d59753e7e99418a1c7604f4808a5, type: 3}
       propertyPath: m_LocalPosition.z
@@ -245,11 +245,7 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1979686911352342, guid: aeb0d59753e7e99418a1c7604f4808a5,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 3842518525264511828}
-    - targetCorrespondingSourceObject: {fileID: 1979686911352342, guid: aeb0d59753e7e99418a1c7604f4808a5,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 195635003630759498}
+      addedObject: {fileID: 8558937398897729099}
   m_SourcePrefab: {fileID: 100100000, guid: aeb0d59753e7e99418a1c7604f4808a5, type: 3}
 --- !u!4 &3262310472399610616 stripped
 Transform:
@@ -380,9 +376,9 @@ MonoBehaviour:
   m_Activated:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3842518525264511828}
-        m_TargetAssemblyTypeName: Flashlight, Assembly-CSharp
-        m_MethodName: LightOnAndOf
+      - m_Target: {fileID: 8558937398897729099}
+        m_TargetAssemblyTypeName: FlashlightController, Assembly-CSharp
+        m_MethodName: LightOnAndOff
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -475,7 +471,7 @@ MonoBehaviour:
   m_StartingSingleGrabTransformers: []
   m_StartingMultipleGrabTransformers: []
   m_AddDefaultGrabTransformers: 1
---- !u!114 &3842518525264511828
+--- !u!114 &8558937398897729099
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -484,18 +480,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 3264612865701742800}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 597df500192e0264ea1db66c766a8e22, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &195635003630759498
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3264612865701742800}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0a4eb93af6c677c4abfc31d724a1a774, type: 3}
+  m_Script: {fileID: 11500000, guid: 71cf56fce26887c439e571ee8c6952d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

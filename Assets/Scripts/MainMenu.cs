@@ -8,7 +8,7 @@ public class MainMenu : MonoBehaviour
     public void Play()
     {
 
-        if (SimulatorSettings.numberOfRooms != 0 || SimulatorSettings.events != null) {
+        if (SimulatorSettings.numberOfRooms != 0) {
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
         }
         else

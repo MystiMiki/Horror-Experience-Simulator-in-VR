@@ -3,25 +3,28 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class _pathGenerator : MonoBehaviour
-{
-    public int numberOfRooms = 5;
-    public GameObject nodePrefab; 
-    public GameObject roomPrefab; 
-    public GameObject wallPrefab; 
-    public GameObject doorPrefab; 
-    public GameObject ceilingPrefab;
+public class roomGenerator : MonoBehaviour
+{      
+    [SerializeField] GameObject nodePrefab;
+    [SerializeField] List<GameObject> roomPrefabs;
+    [SerializeField] GameObject wallPrefab;
+    [SerializeField] GameObject doorPrefab;
+    [SerializeField] GameObject ceilingPrefab;
 
+    private int numberOfRooms;
     private int _correctScaling = 10; // Corresponds to the size of the plane
     private int _gridDimension;
     private string _prevDoor;
+    private bool _flashlight = false;
     private GameObject[,] _grid;
     private List<Vector2Int> _path;
     private List<Vector3> _wallsCoordination = new List<Vector3>();
+    private List<GameObject> nonmoveableObjects = new List<GameObject>();
 
     // Start is called before the first frame update
     void Start()
-    {
+    { 
+        numberOfRooms = SimulatorSettings.numberOfRooms;
         Initialize_grid();
         Generate_path();
         Activate_path();
@@ -31,6 +34,7 @@ public class _pathGenerator : MonoBehaviour
     {
         // Initialize the grid with nodes 
         _gridDimension = Mathf.CeilToInt(Mathf.Sqrt(numberOfRooms));
+        if (_gridDimension * _gridDimension == numberOfRooms) _gridDimension += 1;
         _grid = new GameObject[_gridDimension, _gridDimension];
 
         for (int i = 0; i < _gridDimension; i++)
@@ -133,29 +137,46 @@ public class _pathGenerator : MonoBehaviour
                 _path.RemoveRange(numberOfRooms + 1, _path.Count - numberOfRooms - 1);
             }
 
-            string _pathString = "_path: ";
+            string _pathString = "Path: ";
+            List<GameObject> availableRooms = new List<GameObject>();
             foreach (var node in _path)
             {
                 int x = node.x;
                 int y = node.y;
 
-                // Store the position and scale of the existing node
-                Vector3 currentPosition = _grid[x, y].transform.position;
-                Vector3 currentScale = _grid[x, y].transform.localScale;
+                if (_path.IndexOf(node) != _path.Count - 1)
+                {
+                    // Store the position and scale of the existing node
+                    Vector3 currentPosition = _grid[x, y].transform.position;
+                    Vector3 currentScale = _grid[x, y].transform.localScale;
 
-                // Destroy the existing node
-                Destroy(_grid[x, y]);
+                    // Destroy the existing node
+                    Destroy(_grid[x, y]);
 
-                // Instantiate a new prefab at the same position and with the same scale
-                GameObject room = Instantiate(roomPrefab, currentPosition, Quaternion.identity);
-                room.transform.localScale = currentScale;
-                room.name = x + "," + y;
+                    if (availableRooms.Count == 0)
+                    {
+                        // If the list is empty, refill it with all room prefabs                        
+                        availableRooms = roomPrefabs;
+                    }
 
-                // Assign the new node to the _grid
-                _grid[x, y] = room;
+                    // Randomly select a room prefab from the list
+                    int randomIndex = Random.Range(0, availableRooms.Count);
+                    GameObject selectedRoomPrefab = availableRooms[randomIndex];
 
-                // Append coordinates to the _path string
-                _pathString += $"({x},{y}) ";
+                    // Remove the selected room prefab from the list
+                    availableRooms.RemoveAt(randomIndex);
+
+                    // Instantiate a new prefab at the same position and with the same scale
+                    GameObject room = Instantiate(selectedRoomPrefab, currentPosition, Quaternion.identity);
+                    room.transform.localScale = currentScale;
+                    room.name = x + "," + y;
+
+                    // Assign the new node to the _grid
+                    _grid[x, y] = room;
+
+                    // Append coordinates to the _path string
+                    _pathString += $"({x},{y}) ";
+                }
             }
 
             // Generate walls along the _path
@@ -166,7 +187,7 @@ public class _pathGenerator : MonoBehaviour
         }
         else
         {
-            Debug.Log("No valid _path found.");
+            Debug.Log("No valid path found.");
         }
     }
 
@@ -200,8 +221,6 @@ public class _pathGenerator : MonoBehaviour
             // Calculate the direction of the _path
             int dx = nextX - currentX;
             int dy = nextY - currentY;
-
-            Debug.Log(currentX + "," + currentY);
 
             // Create walls as children of the plane
             if (dx == 1) // Move to the right
@@ -240,6 +259,10 @@ public class _pathGenerator : MonoBehaviour
             }
             // Create the ceiling
             CreateWall(_grid[currentX, currentY], ceilingPrefab, new Vector3(0f, 4f, 0f), Quaternion.identity, "Ceiling");
+            SpawnFlashlightOrBattery();
+
+
+            PlaceEvent(_grid[currentX, currentY]);
         }
 
         // Mark the last doors for further processing
@@ -266,4 +289,47 @@ public class _pathGenerator : MonoBehaviour
         }
     }
 
+    void PlaceEvent(GameObject node)
+    {
+        // Generate a random boolean value
+        bool placeDocument = Random.Range(0, 2) == 0;
+        bool placeJumpscare = Random.Range(0, 2) == 0;
+        bool placeKey = Random.Range(0, 2) == 0;
+        
+        //TODO
+    }
+
+    void SpawnFlashlightOrBattery()
+    {
+        // Find all GameObjects with the tag "FlashlightOrBattery" in the entire hierarchy
+        GameObject[] flashlightOrBatteryObjects = GameObject.FindGameObjectsWithTag("FlashlightOrBattery");
+        Shuffle(flashlightOrBatteryObjects);
+
+        // Loop through each found object
+        foreach (GameObject obj in flashlightOrBatteryObjects)
+        {
+            // Set all to nonactive
+            if (!SimulatorSettings.limitedResources)
+            {
+                GameObject battery = obj.transform.Find("Battery").gameObject;
+                battery.SetActive(false);
+            }
+
+            // Get the parent's name
+            string parentName = obj.transform.parent.name;
+
+            // Check if the parent's name is "0,0" and activate the flashlight
+            if (parentName == "0,0" && !_flashlight)
+            {
+                _flashlight = true;
+
+                // Assuming there's a child named "Flashlight" under the found object
+                GameObject flashlight = obj.transform.Find("Flashlight").gameObject;              
+                flashlight.SetActive(true);
+
+                GameObject battery = obj.transform.Find("Battery").gameObject;
+                battery.SetActive(false);
+            }            
+        }
+    }
 }

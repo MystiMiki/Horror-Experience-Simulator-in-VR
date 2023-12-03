@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 7385171121377366477}
   - component: {fileID: 3882421304535835270}
   - component: {fileID: 5225382012148272165}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -362,7 +362,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2348032772189360734}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: CeilingPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
