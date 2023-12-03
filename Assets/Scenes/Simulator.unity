@@ -2996,8 +2996,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodePrefab: {fileID: 7636221480898501806, guid: ab3318fd99599d44ea8d2dca2d3e8d8e,
     type: 3}
-  roomPrefab: {fileID: 7636221480898501806, guid: 698fbda5ed10faf48a516f28517b9af3,
-    type: 3}
+  roomPrefabs:
+  - {fileID: 7636221480898501806, guid: 698fbda5ed10faf48a516f28517b9af3, type: 3}
+  - {fileID: 7636221480898501806, guid: 36a7c2882c0c4374585d7d1d53d5404f, type: 3}
+  - {fileID: 7636221480898501806, guid: 171c3716f09daaa419eca6d596b83e28, type: 3}
+  - {fileID: 7636221480898501806, guid: 44c6dc8e6b2d8b14db15137b02b68e5d, type: 3}
+  - {fileID: 7636221480898501806, guid: a21f74aa60918c044af5bfcf55282502, type: 3}
   wallPrefab: {fileID: 5909349397650656186, guid: b9e7597767874c140850a5389a82ff58,
     type: 3}
   doorPrefab: {fileID: 2708792049440652699, guid: 0f7c27283b0bb5a40af8da8cba747100,
