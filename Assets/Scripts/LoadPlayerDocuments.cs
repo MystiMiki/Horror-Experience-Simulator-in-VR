@@ -12,16 +12,17 @@ public class LoadPlayerDocuments : MonoBehaviour
     void Start()
     {
         // Specify the folder path where your .txt files are located
-        string folderPath = "Assets/PlayerDocuments";
+        string folderPath = "PlayerDocuments";
 
         // Get all .txt files in the specified folder
-        string[] txtFiles = Directory.GetFiles(folderPath, "*.txt");
+        string[] txtFiles = Directory.GetFiles(Path.Combine("Assets", "Resources", folderPath), "*.txt");
 
         // Read and process each file
         foreach (string filePath in txtFiles)
         {
-            // Load the TextAsset directly
-            TextAsset textAsset = Resources.Load<TextAsset>(filePath);
+            // Load the TextAsset directly (without extension)
+            string fileName = Path.GetFileNameWithoutExtension(filePath);
+            TextAsset textAsset = Resources.Load<TextAsset>(Path.Combine(folderPath, fileName));
 
             if (textAsset != null)
             {
@@ -30,7 +31,7 @@ public class LoadPlayerDocuments : MonoBehaviour
             }
             else
             {
-                Debug.LogError("TextAsset not found: " + filePath);
+                Debug.LogError("TextAsset not found: " + fileName);
             }
         }
     }

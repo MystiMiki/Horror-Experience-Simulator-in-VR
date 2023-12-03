@@ -1542,19 +1542,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4218543253785350, guid: 5b3cec0012220604d8aa38cd0517048b, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.0000029504295
-      objectReference: {fileID: 0}
-    - target: {fileID: 4218543253785350, guid: 5b3cec0012220604d8aa38cd0517048b, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4218543253785350, guid: 5b3cec0012220604d8aa38cd0517048b, type: 3}
-      propertyPath: m_LocalRotation.y
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4218543253785350, guid: 5b3cec0012220604d8aa38cd0517048b, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4218543253785350, guid: 5b3cec0012220604d8aa38cd0517048b, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4218543253785350, guid: 5b3cec0012220604d8aa38cd0517048b, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4218543253785350, guid: 5b3cec0012220604d8aa38cd0517048b, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -1562,7 +1562,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4218543253785350, guid: 5b3cec0012220604d8aa38cd0517048b, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 180.00002
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4218543253785350, guid: 5b3cec0012220604d8aa38cd0517048b, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -1613,6 +1613,16 @@ PrefabInstance:
       propertyPath: m_Limits.min
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8504262076645442022, guid: 5b3cec0012220604d8aa38cd0517048b,
+        type: 3}
+      propertyPath: m_ConnectedAnchor.x
+      value: 0.68760055
+      objectReference: {fileID: 0}
+    - target: {fileID: 8504262076645442022, guid: 5b3cec0012220604d8aa38cd0517048b,
+        type: 3}
+      propertyPath: m_ConnectedAnchor.z
+      value: 0.090146065
+      objectReference: {fileID: 0}
     - target: {fileID: 8634714709179542883, guid: 5b3cec0012220604d8aa38cd0517048b,
         type: 3}
       propertyPath: m_Size.x
@@ -1661,7 +1671,7 @@ PrefabInstance:
     - target: {fileID: 9059275909630973073, guid: 5b3cec0012220604d8aa38cd0517048b,
         type: 3}
       propertyPath: m_ExcludeLayers.m_Bits
-      value: 64
+      value: 832
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 7055592352005755291, guid: 5b3cec0012220604d8aa38cd0517048b, type: 3}

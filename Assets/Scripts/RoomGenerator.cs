@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 
 public class roomGenerator : MonoBehaviour
@@ -260,7 +261,7 @@ public class roomGenerator : MonoBehaviour
             // Create the ceiling
             CreateWall(_grid[currentX, currentY], ceilingPrefab, new Vector3(0f, 4f, 0f), Quaternion.identity, "Ceiling");
             SpawnFlashlightOrBattery();
-
+            if (SimulatorSettings.documents) SetClipboardText();            
 
             PlaceEvent(_grid[currentX, currentY]);
         }
@@ -308,13 +309,6 @@ public class roomGenerator : MonoBehaviour
         // Loop through each found object
         foreach (GameObject obj in flashlightOrBatteryObjects)
         {
-            // Set all to nonactive
-            if (!SimulatorSettings.limitedResources)
-            {
-                GameObject battery = obj.transform.Find("Battery").gameObject;
-                battery.SetActive(false);
-            }
-
             // Get the parent's name
             string parentName = obj.transform.parent.name;
 
@@ -332,4 +326,40 @@ public class roomGenerator : MonoBehaviour
             }            
         }
     }
+
+    void SetClipboardText()
+    {    
+        GameObject[] clipboardObjects = GameObject.FindGameObjectsWithTag("Clipboard");
+        Shuffle(clipboardObjects);
+
+        // Loop through each found object
+        foreach (GameObject obj in clipboardObjects)
+        {
+            string parentName = obj.transform.parent.name;
+
+            // Try to find the TextMeshPro component in children of the clipboard object
+            TextMeshProUGUI clipboardText = obj.GetComponentInChildren<TextMeshProUGUI>();
+
+            if (clipboardText != null)
+            {
+                if (LoadPlayerDocuments.textAssets.Count > 0)
+                {
+                    // Set the text from the first element in textAssets
+                    clipboardText.text = LoadPlayerDocuments.textAssets[0].text;
+
+                    // Remove the used text from the list
+                    LoadPlayerDocuments.textAssets.RemoveAt(0);
+                }
+                else
+                {
+                    Debug.LogWarning("No more text assets to load.");
+                }
+            }
+            else
+            {
+                Debug.LogError("TextMeshPro component not found in children of the clipboard object!");
+            }
+        }
+    }
+
 }
