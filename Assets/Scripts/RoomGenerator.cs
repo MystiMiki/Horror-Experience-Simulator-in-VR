@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 using TMPro;
 
@@ -12,35 +13,44 @@ public class roomGenerator : MonoBehaviour
     [SerializeField] GameObject doorPrefab;
     [SerializeField] GameObject ceilingPrefab;
 
-    private int numberOfRooms;
-    private int _correctScaling = 10; // Corresponds to the size of the plane
-    private int _gridDimension;
-    private string _prevDoor;
-    private bool _flashlight = false;
+    const float _correctScaling = 10f; // Corresponds to the size of the plane
+    const float _ceilingHeight = 4f; // Corresponds to the size of the plane
+
+    private int numberOfRooms;    
+    private int _gridSize;
+    private string _previousDoorDirection;
+    private bool _flashlightActivated = false;
     private GameObject[,] _grid;
     private List<Vector2Int> _path;
-    private List<Vector3> _wallsCoordination = new List<Vector3>();
-    private List<GameObject> nonmoveableObjects = new List<GameObject>();
+    private List<Vector3> _wallCoordinates = new List<Vector3>();
 
     // Start is called before the first frame update
     void Start()
-    { 
-        numberOfRooms = SimulatorSettings.numberOfRooms;
-        Initialize_grid();
-        Generate_path();
-        Activate_path();
+    {
+        try
+        {
+            numberOfRooms = SimulatorSettings.numberOfRooms;
+            InitializeGrid();
+            GeneratePath();
+            ActivatePath();
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"An error occurred in the Start method: {ex.Message}");
+        }
     }
 
-    void Initialize_grid()
+
+    void InitializeGrid()
     {
         // Initialize the grid with nodes 
-        _gridDimension = Mathf.CeilToInt(Mathf.Sqrt(numberOfRooms));
-        if (_gridDimension * _gridDimension == numberOfRooms) _gridDimension += 1;
-        _grid = new GameObject[_gridDimension, _gridDimension];
+        _gridSize = Mathf.CeilToInt(Mathf.Sqrt(numberOfRooms));
+        if (_gridSize * _gridSize == numberOfRooms) _gridSize += 1;
+        _grid = new GameObject[_gridSize, _gridSize];
 
-        for (int i = 0; i < _gridDimension; i++)
+        for (int i = 0; i < _gridSize; i++)
         {
-            for (int j = 0; j < _gridDimension; j++)
+            for (int j = 0; j < _gridSize; j++)
             {
                 // Add scaling to the position of the node
                 float xPos = i * _correctScaling;
@@ -54,16 +64,16 @@ public class roomGenerator : MonoBehaviour
         }
     }
 
-    void Generate_path()
+    void GeneratePath()
     {
         // Use the backtracking algorithm to find a path
-        _path = Find_path(0, 0, new List<Vector2Int> { new Vector2Int(0, 0) });
+        _path = FindPath(0, 0, new List<Vector2Int> { new Vector2Int(0, 0) });
     }
 
-    List<Vector2Int> Find_path(int x, int y, List<Vector2Int> path)
+    List<Vector2Int> FindPath(int x, int y, List<Vector2Int> path)
     {
         // If all nodes are visited, return the path
-        if (path.Count == _gridDimension * _gridDimension)
+        if (path.Count == _gridSize * _gridSize)
         {
             return path;
         }
@@ -91,7 +101,7 @@ public class roomGenerator : MonoBehaviour
                 path.Add(new Vector2Int(newX, newY));
 
                 // Recursively find the _path from the new position
-                List<Vector2Int> result = Find_path(newX, newY, path);
+                List<Vector2Int> result = FindPath(newX, newY, path);
 
                 // If a valid _path is found, return it
                 if (result != null)
@@ -108,12 +118,12 @@ public class roomGenerator : MonoBehaviour
         return null;
     }
 
-    void Shuffle<T>(T[] array) 
+    void Shuffle<T>(T[] array)
     {
         int n = array.Length;
         for (int i = 0; i < n; i++)
         {
-            int r = i + Random.Range(0, n - i);
+            int r = i + UnityEngine.Random.Range(0, n - i);
             T temp = array[i];
             array[i] = array[r];
             array[r] = temp;
@@ -124,10 +134,10 @@ public class roomGenerator : MonoBehaviour
     bool IsValidMove(int x, int y, List<Vector2Int> path)
     {
         // Check if the move is within the _grid and if the node has not been visited before
-        return x >= 0 && x < _gridDimension && y >= 0 && y < _gridDimension && !path.Contains(new Vector2Int(x, y));
+        return x >= 0 && x < _gridSize && y >= 0 && y < _gridSize && !path.Contains(new Vector2Int(x, y));
     }
 
-    void Activate_path()
+    void ActivatePath()
     {
         // Replace the nodes with the rooms and activate them along the _path
         if (_path != null)
@@ -138,7 +148,7 @@ public class roomGenerator : MonoBehaviour
                 _path.RemoveRange(numberOfRooms + 1, _path.Count - numberOfRooms - 1);
             }
 
-            string _pathString = "Path: ";
+            string pathDescription = "Path: ";
             List<GameObject> availableRooms = new List<GameObject>();
             foreach (var node in _path)
             {
@@ -161,7 +171,7 @@ public class roomGenerator : MonoBehaviour
                     }
 
                     // Randomly select a room prefab from the list
-                    int randomIndex = Random.Range(0, availableRooms.Count);
+                    int randomIndex = UnityEngine.Random.Range(0, availableRooms.Count);
                     GameObject selectedRoomPrefab = availableRooms[randomIndex];
 
                     // Remove the selected room prefab from the list
@@ -176,7 +186,7 @@ public class roomGenerator : MonoBehaviour
                     _grid[x, y] = room;
 
                     // Append coordinates to the _path string
-                    _pathString += $"({x},{y}) ";
+                    pathDescription += $"({x},{y}) ";
                 }
             }
 
@@ -184,7 +194,7 @@ public class roomGenerator : MonoBehaviour
             GenerateWalls();
 
             // Print the final _path to the console
-            Debug.Log(_pathString);
+            Debug.Log(pathDescription);
         }
         else
         {
@@ -195,86 +205,91 @@ public class roomGenerator : MonoBehaviour
     void GenerateWalls()
     {
         // Generate walls around the plane with remembering the door in the previous room
-        if (wallPrefab == null || doorPrefab == null)
-        {
-            Debug.LogError("Wall prefab not assigned!");
-            return;
+        try
+        {            
+            if (wallPrefab == null || doorPrefab == null)
+            {
+                Debug.LogError("Wall prefab or Door prefab is null. Assign them in the inspector.");
+                return;
+            }
+
+            // Get the size of the plane
+            Vector3 planeSize = _correctScaling * transform.localScale;
+
+            // Calculate half extents to position walls correctly
+            float halfWidth = planeSize.x / 2f;
+            float halfLength = planeSize.z / 2f;
+
+            // Set which side the door was on in the previous room
+            _previousDoorDirection = "";
+
+            for (int i = 0; i < _path.Count - 1; i++)
+            {
+                int currentX = _path[i].x;
+                int currentY = _path[i].y;
+
+                int nextX = _path[i + 1].x;
+                int nextY = _path[i + 1].y;
+
+                // Calculate the direction of the _path
+                int dx = nextX - currentX;
+                int dy = nextY - currentY;
+
+                // Create walls as children of the plane
+                if (dx == 1) // Move to the right
+                {
+                    CreateWall(_grid[currentX, currentY], wallPrefab, new Vector3(0f, 0f, halfLength), Quaternion.identity, "Top");
+                    CreateWall(_grid[currentX, currentY], wallPrefab, new Vector3(0f, 0f, -halfLength), Quaternion.identity, "Bottom");
+                    CreateWall(_grid[currentX, currentY], wallPrefab, new Vector3(-halfWidth, 0f, 0f), Quaternion.Euler(0f, 90f, 0f), "Left");
+                    CreateWall(_grid[currentX, currentY], doorPrefab, new Vector3(halfWidth, 0f, 0f), Quaternion.Euler(0f, -90f, 0f), "Right");
+                    _previousDoorDirection = "Left";
+                }
+                else if (dx == -1) // Move to the left
+                {
+                    CreateWall(_grid[currentX, currentY], wallPrefab, new Vector3(0f, 0f, halfLength), Quaternion.identity, "Top");
+                    CreateWall(_grid[currentX, currentY], wallPrefab, new Vector3(0f, 0f, -halfLength), Quaternion.identity, "Bottom");
+                    CreateWall(_grid[currentX, currentY], doorPrefab, new Vector3(-halfWidth, 0f, 0f), Quaternion.Euler(0f, -90f, 0f), "Left");
+                    CreateWall(_grid[currentX, currentY], wallPrefab, new Vector3(halfWidth, 0f, 0f), Quaternion.Euler(0f, 90f, 0f), "Right");
+                    _previousDoorDirection = "Right";
+                }
+                else if (dy == 1) // Move upward
+                {
+
+                    CreateWall(_grid[currentX, currentY], doorPrefab, new Vector3(0f, 0f, halfLength), Quaternion.Euler(0f, -180f, 0f), "Top");
+                    CreateWall(_grid[currentX, currentY], wallPrefab, new Vector3(0f, 0f, -halfLength), Quaternion.identity, "Bottom");
+                    CreateWall(_grid[currentX, currentY], wallPrefab, new Vector3(halfWidth, 0f, 0f), Quaternion.Euler(0f, 90f, 0f), "Right");
+                    CreateWall(_grid[currentX, currentY], wallPrefab, new Vector3(-halfWidth, 0f, 0f), Quaternion.Euler(0f, 90f, 0f), "Left");
+                    _previousDoorDirection = "Bottom";
+                }
+                else if (dy == -1) // Move downward
+                {
+
+                    CreateWall(_grid[currentX, currentY], wallPrefab, new Vector3( 0f, 0f, halfLength), Quaternion.identity, "Top");
+                    CreateWall(_grid[currentX, currentY], doorPrefab, new Vector3( 0f, 0f, -halfLength), Quaternion.Euler(0f, -180f, 0f), "Bottom");
+                    CreateWall(_grid[currentX, currentY], wallPrefab, new Vector3( halfWidth, 0f, 0f), Quaternion.Euler(0f, 90f, 0f), "Right");
+                    CreateWall(_grid[currentX, currentY], wallPrefab, new Vector3( -halfWidth, 0f, 0f), Quaternion.Euler(0f, 90f, 0f), "Left");
+                    _previousDoorDirection = "Top";
+                }
+                // Create the ceiling
+                CreateWall(_grid[currentX, currentY], ceilingPrefab, new Vector3(0f, _ceilingHeight, 0f), Quaternion.identity, "Ceiling");
+                SpawnFlashlightOrBattery();
+                if (SimulatorSettings.documents) SetClipboardText();            
+                }
+
+            // Mark the last doors for further processing
+            Transform door = _grid[_path[_path.Count - 2].x, _path[_path.Count - 2].y].transform.Find("Door");
+            door.name = "LastDoor";
         }
-
-        // Get the size of the plane
-        Vector3 planeSize = _correctScaling * transform.localScale;
-
-        // Calculate half extents to position walls correctly
-        float halfWidth = planeSize.x / 2f;
-        float halfLength = planeSize.z / 2f;
-
-        // Set which side the door was on in the previous room
-        _prevDoor = "";
-
-        for (int i = 0; i < _path.Count - 1; i++)
+        catch (Exception ex)
         {
-            int currentX = _path[i].x;
-            int currentY = _path[i].y;
-
-            int nextX = _path[i + 1].x;
-            int nextY = _path[i + 1].y;
-
-            // Calculate the direction of the _path
-            int dx = nextX - currentX;
-            int dy = nextY - currentY;
-
-            // Create walls as children of the plane
-            if (dx == 1) // Move to the right
-            {
-                CreateWall(_grid[currentX, currentY], wallPrefab, new Vector3(0f, 0f, halfLength), Quaternion.identity, "Top");
-                CreateWall(_grid[currentX, currentY], wallPrefab, new Vector3(0f, 0f, -halfLength), Quaternion.identity, "Bottom");
-                CreateWall(_grid[currentX, currentY], wallPrefab, new Vector3(-halfWidth, 0f, 0f), Quaternion.Euler(0f, 90f, 0f), "Left");
-                CreateWall(_grid[currentX, currentY], doorPrefab, new Vector3(halfWidth, 0f, 0f), Quaternion.Euler(0f, -90f, 0f), "Right");
-                _prevDoor = "Left";
-            }
-            else if (dx == -1) // Move to the left
-            {
-                CreateWall(_grid[currentX, currentY], wallPrefab, new Vector3(0f, 0f, halfLength), Quaternion.identity, "Top");
-                CreateWall(_grid[currentX, currentY], wallPrefab, new Vector3(0f, 0f, -halfLength), Quaternion.identity, "Bottom");
-                CreateWall(_grid[currentX, currentY], doorPrefab, new Vector3(-halfWidth, 0f, 0f), Quaternion.Euler(0f, -90f, 0f), "Left");
-                CreateWall(_grid[currentX, currentY], wallPrefab, new Vector3(halfWidth, 0f, 0f), Quaternion.Euler(0f, 90f, 0f), "Right");
-                _prevDoor = "Right";
-            }
-            else if (dy == 1) // Move upward
-            {
-
-                CreateWall(_grid[currentX, currentY], doorPrefab, new Vector3(0f, 0f, halfLength), Quaternion.Euler(0f, -180f, 0f), "Top");
-                CreateWall(_grid[currentX, currentY], wallPrefab, new Vector3(0f, 0f, -halfLength), Quaternion.identity, "Bottom");
-                CreateWall(_grid[currentX, currentY], wallPrefab, new Vector3(halfWidth, 0f, 0f), Quaternion.Euler(0f, 90f, 0f), "Right");
-                CreateWall(_grid[currentX, currentY], wallPrefab, new Vector3(-halfWidth, 0f, 0f), Quaternion.Euler(0f, 90f, 0f), "Left");
-                _prevDoor = "Bottom";
-            }
-            else if (dy == -1) // Move downward
-            {
-
-                CreateWall(_grid[currentX, currentY], wallPrefab, new Vector3( 0f, 0f, halfLength), Quaternion.identity, "Top");
-                CreateWall(_grid[currentX, currentY], doorPrefab, new Vector3( 0f, 0f, -halfLength), Quaternion.Euler(0f, -180f, 0f), "Bottom");
-                CreateWall(_grid[currentX, currentY], wallPrefab, new Vector3( halfWidth, 0f, 0f), Quaternion.Euler(0f, 90f, 0f), "Right");
-                CreateWall(_grid[currentX, currentY], wallPrefab, new Vector3( -halfWidth, 0f, 0f), Quaternion.Euler(0f, 90f, 0f), "Left");
-                _prevDoor = "Top";
-            }
-            // Create the ceiling
-            CreateWall(_grid[currentX, currentY], ceilingPrefab, new Vector3(0f, 4f, 0f), Quaternion.identity, "Ceiling");
-            SpawnFlashlightOrBattery();
-            if (SimulatorSettings.documents) SetClipboardText();            
-
-            PlaceEvent(_grid[currentX, currentY]);
+            Debug.LogError($"An error occurred in the GenerateWalls method: {ex.Message}");
         }
-
-        // Mark the last doors for further processing
-        Transform door = _grid[_path[_path.Count - 2].x, _path[_path.Count - 2].y].transform.Find("Door");
-        door.name = "LastDoor";
     }
 
     void CreateWall(GameObject node, GameObject prefab, Vector3 localPosition, Quaternion rotation, string name)
     {     
         // Separate method to create one wall according to the given attributes
-        if (name != _prevDoor)
+        if (name != _previousDoorDirection)
         {
             GameObject wall = Instantiate(prefab, transform);
             wall.transform.SetParent(node.transform);
@@ -290,16 +305,6 @@ public class roomGenerator : MonoBehaviour
         }
     }
 
-    void PlaceEvent(GameObject node)
-    {
-        // Generate a random boolean value
-        bool placeDocument = Random.Range(0, 2) == 0;
-        bool placeJumpscare = Random.Range(0, 2) == 0;
-        bool placeKey = Random.Range(0, 2) == 0;
-        
-        //TODO
-    }
-
     void SpawnFlashlightOrBattery()
     {
         // Find all GameObjects with the tag "FlashlightOrBattery" in the entire hierarchy
@@ -313,9 +318,9 @@ public class roomGenerator : MonoBehaviour
             string parentName = obj.transform.parent.name;
 
             // Check if the parent's name is "0,0" and activate the flashlight
-            if (parentName == "0,0" && !_flashlight)
+            if (parentName == "0,0" && !_flashlightActivated)
             {
-                _flashlight = true;
+                _flashlightActivated = true;
 
                 // Assuming there's a child named "Flashlight" under the found object
                 GameObject flashlight = obj.transform.Find("Flashlight").gameObject;              
@@ -328,37 +333,40 @@ public class roomGenerator : MonoBehaviour
     }
 
     void SetClipboardText()
-    {    
-        GameObject[] clipboardObjects = GameObject.FindGameObjectsWithTag("Clipboard");
-        Shuffle(clipboardObjects);
-
-        // Loop through each found object
-        foreach (GameObject obj in clipboardObjects)
+    {
+        try
         {
-            string parentName = obj.transform.parent.name;
+            GameObject[] clipboardObjects = GameObject.FindGameObjectsWithTag("Clipboard");
+            Shuffle(clipboardObjects);
 
-            // Try to find the TextMeshPro component in children of the clipboard object
-            TextMeshProUGUI clipboardText = obj.GetComponentInChildren<TextMeshProUGUI>();
-
-            if (clipboardText != null)
+            // Loop through each found object
+            foreach (GameObject obj in clipboardObjects)
             {
-                if (LoadPlayerDocuments.textAssets.Count > 0)
-                {
-                    // Set the text from the first element in textAssets
-                    clipboardText.text = LoadPlayerDocuments.textAssets[0].text;
+                string parentName = obj.transform.parent.name;
 
-                    // Remove the used text from the list
-                    LoadPlayerDocuments.textAssets.RemoveAt(0);
+                // Try to find the TextMeshPro component in children of the clipboard object
+                TextMeshProUGUI clipboardText = obj.GetComponentInChildren<TextMeshProUGUI>();
+
+                if (clipboardText != null)
+                {
+                    if (LoadPlayerDocuments.textAssets.Count > 0)
+                    {
+                        // Set the text from the first element in textAssets
+                        clipboardText.text = LoadPlayerDocuments.textAssets[0].text;
+
+                        // Remove the used text from the list
+                        LoadPlayerDocuments.textAssets.RemoveAt(0);
+                    }
                 }
                 else
                 {
-                    Debug.LogWarning("No more text assets to load.");
+                    Debug.LogError("TextMeshPro component not found in children of the clipboard object!");
                 }
             }
-            else
-            {
-                Debug.LogError("TextMeshPro component not found in children of the clipboard object!");
-            }
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"An error occurred in the SetClipboardText method: {ex.Message}");
         }
     }
 

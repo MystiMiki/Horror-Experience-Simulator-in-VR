@@ -9,8 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8536045810197008444}
-  - component: {fileID: 4217596115278832365}
-  - component: {fileID: 7448127422028833902}
   m_Layer: 11
   m_Name: Scavenger
   m_TagString: Untagged
@@ -34,47 +32,6 @@ Transform:
   - {fileID: 5125264928235720952}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4217596115278832365
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2197438063717658396}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ed9019b9c018e35429af179c802ae4d3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  movementType: 0
-  movementSpeed: 0
-  rotationSpeed: 0
-  teleportDistance: 0
-  disappearTime: 0
-  appearTime: 0
---- !u!136 &7448127422028833902
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2197438063717658396}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 1.7
-  m_Direction: 1
-  m_Center: {x: 0.1, y: 0.7, z: 0.3}
 --- !u!1001 &5944134829838366113
 PrefabInstance:
   m_ObjectHideFlags: 0
