@@ -323,37 +323,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_ActionAssets:
   - {fileID: -944628639613478452, guid: c348712bda248c246b8c49b3db54643f, type: 3}
---- !u!1 &559866522
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 559866524}
-  m_Layer: 0
-  m_Name: Load Events Data
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &559866524
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 559866522}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.32084918, y: 0.67858505, z: 5.924927}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &583611629
 GameObject:
   m_ObjectHideFlags: 0
@@ -2168,6 +2137,7 @@ GameObject:
   - component: {fileID: 1065729369}
   - component: {fileID: 1065729368}
   - component: {fileID: 1065729367}
+  - component: {fileID: 1065729371}
   m_Layer: 3
   m_Name: XR Origin (XR Rig)
   m_TagString: Untagged
@@ -2249,6 +2219,18 @@ Transform:
   - {fileID: 257802764}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 34.418, z: 0}
+--- !u!114 &1065729371
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1065729366}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b56f80335cae4954697d1e85ccdfa43d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1113368001
 GameObject:
   m_ObjectHideFlags: 0
@@ -2261,6 +2243,7 @@ GameObject:
   - component: {fileID: 1113368003}
   - component: {fileID: 1113368004}
   - component: {fileID: 1113368005}
+  - component: {fileID: 1113368006}
   m_Layer: 0
   m_Name: Monitor And Save Data
   m_TagString: Untagged
@@ -2317,6 +2300,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7f402e6d5cd6e8e43ac9297e9113985b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1113368006
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1113368001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5147be1db75bd8f4c8e924c77e709e76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1339688642
@@ -3203,5 +3198,4 @@ SceneRoots:
   - {fileID: 1732805789}
   - {fileID: 1867134699}
   - {fileID: 1838815998}
-  - {fileID: 559866524}
   - {fileID: 1113368002}
