@@ -332,26 +332,13 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 559866524}
-  - component: {fileID: 559866523}
   m_Layer: 0
-  m_Name: Events
+  m_Name: Load Events Data
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &559866523
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 559866522}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c1013ca5341561b408896187a0158ded, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &559866524
 Transform:
   m_ObjectHideFlags: 0
@@ -2262,6 +2249,76 @@ Transform:
   - {fileID: 257802764}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 34.418, z: 0}
+--- !u!1 &1113368001
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1113368002}
+  - component: {fileID: 1113368003}
+  - component: {fileID: 1113368004}
+  - component: {fileID: 1113368005}
+  m_Layer: 0
+  m_Name: Monitor And Save Data
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1113368002
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1113368001}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.142434, y: -0.49433303, z: -0.43846035}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1113368003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1113368001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63040d412aa0bdb4097d9db159bc63b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1113368004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1113368001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d59a332f1472d1b46b32510c38d34eed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1113368005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1113368001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f402e6d5cd6e8e43ac9297e9113985b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1339688642
 GameObject:
   m_ObjectHideFlags: 0
@@ -2957,7 +3014,7 @@ GameObject:
   - component: {fileID: 1867134699}
   - component: {fileID: 1867134698}
   m_Layer: 0
-  m_Name: LoadBeforeGrid
+  m_Name: Load Before Grid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3147,3 +3204,4 @@ SceneRoots:
   - {fileID: 1867134699}
   - {fileID: 1838815998}
   - {fileID: 559866524}
+  - {fileID: 1113368002}
