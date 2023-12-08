@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 using TMPro;
+using UnityEngine.AI;
+using Unity.AI.Navigation;
+
 
 
 public class roomGenerator : MonoBehaviour
@@ -274,11 +277,13 @@ public class roomGenerator : MonoBehaviour
                 CreateWall(_grid[currentX, currentY], ceilingPrefab, new Vector3(0f, _ceilingHeight, 0f), Quaternion.identity, "Ceiling");
                 SpawnFlashlightOrBattery();
                 if (SimulatorSettings.documents) SetClipboardText();            
-                }
+               }
 
             // Mark the last doors for further processing
             Transform door = _grid[_path[_path.Count - 2].x, _path[_path.Count - 2].y].transform.Find("Door");
             door.name = "LastDoor";
+
+            BakeNavMesh();
         }
         catch (Exception ex)
         {
@@ -303,6 +308,20 @@ public class roomGenerator : MonoBehaviour
             else
                 wall.name = name;
         }
+    }
+
+    void BakeNavMesh()
+    {
+        // Get all NavMeshSurface components in the scene
+        NavMeshSurface[] navMeshSurfaces = FindObjectsOfType<NavMeshSurface>();
+
+        // Bake each NavMeshSurface
+        foreach (NavMeshSurface surface in navMeshSurfaces)
+        {
+            surface.BuildNavMesh();
+        }
+
+        Debug.Log("NavMesh baked successfully!");
     }
 
     void SpawnFlashlightOrBattery()
