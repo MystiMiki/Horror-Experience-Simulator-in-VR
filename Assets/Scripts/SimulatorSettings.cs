@@ -10,7 +10,9 @@ public class SimulatorSettings : MonoBehaviour
     public static bool limitedResources = true;
     public static bool documents = true;
     public static bool keys = true;
-    public static bool jumpScares = true;
+    public static bool spiders = true;
+    public static bool scavenger = true;
+    public static bool mutatedInsect = true;
 
 
     public void CheckAndSaveNumber(string number)
@@ -55,10 +57,21 @@ public class SimulatorSettings : MonoBehaviour
         Debug.Log("Keys are set to " + keys + ".");
     }
 
-    public void JumpScares(bool check)
+    public void Spiders(bool check)
     {
-        jumpScares = check;
-        Debug.Log("Jump scares are set to " + jumpScares + ".");
+        spiders = check;
+        Debug.Log("Jump scares are set to " + spiders + ".");
     }
 
+    public void Scavenger(bool check)
+    {
+        scavenger = check;
+        Debug.Log("Jump scares are set to " + scavenger + ".");
+    }
+
+    public void MutatedInsect(bool check)
+    {
+        mutatedInsect = check;
+        Debug.Log("Jump scares are set to " + mutatedInsect + ".");
+    }
 }

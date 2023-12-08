@@ -2,53 +2,89 @@ using UnityEngine;
 using UnityEngine.AI;
 
 public class MonsterMovementController : MonoBehaviour
-{
+{    
     private NavMeshAgent _navMeshAgent;
+    private GameObject firstChildMonster; // Reference to the first child monster object
+
+    private Vector3 _roomSize = new Vector3(50f, 0f, 50f);   // Initial room size assumed to be larger than the actual room size. 
+    private bool isDisappeared = false;
+    private float disappearTimer = 0f;
+
+    private const float disappearTime = 4f;
+    private const float appearTime = 1f;
+    
 
     void Start()
     {
         _navMeshAgent = GetComponent<NavMeshAgent>();
 
-        if(_navMeshAgent == null)
+        if (_navMeshAgent != null && _navMeshAgent.isOnNavMesh)
         {
-            Debug.LogError("The nav mesh agent is not attached to " + gameObject.name);
-        }
-        else
-        {
-            // Check if navMeshAgent is not null before trying to access its properties/methods
+            // Enable the NavMeshAgent and set the initial destination
             _navMeshAgent.enabled = true;
             SetRandomDestination();
-        } 
+        }
+
+
+        if (gameObject.name == "Scavenger")
+        {
+            // Find the first child of the TwitchyStalker
+            Transform[] children = GetComponentsInChildren<Transform>();
+            if (children.Length > 1) // Ensure there is at least one child
+            {
+                firstChildMonster = children[1].gameObject;
+            }
+            else
+            {
+                Debug.LogError("TwitchyStalker has no child monsters!");
+            }
+        }
     }
 
     void Update()
     {
-        // Check if the monster has reached the current destination
-        if (!_navMeshAgent.pathPending && _navMeshAgent.remainingDistance < 0.1f)
+        if (_navMeshAgent != null && _navMeshAgent.isOnNavMesh)
         {
-            SetRandomDestination();
+            if (!_navMeshAgent.pathPending && _navMeshAgent.remainingDistance < 0.1f)
+            {
+                // For monsters, simply move to a random destination
+                SetRandomDestination();
+            }
+
+            if (gameObject.name == "Scavenger")
+            {
+                float randomValue = Random.value;
+                if (randomValue < 0.5f) DisappearReappear();
+            }           
         }
     }
 
     void SetRandomDestination()
     {
         // Calculate a random position within the room
-        float randomX = Random.Range(-roomSize.x / 2f, roomSize.x / 2f);
-        float randomZ = Random.Range(-roomSize.z / 2f, roomSize.z / 2f);
+        float randomX = Random.Range(-_roomSize.x / 2f, _roomSize.x / 2f);
+        float randomZ = Random.Range(-_roomSize.z / 2f, _roomSize.z / 2f);
         Vector3 randomPosition = new Vector3(randomX, 0f, randomZ);
 
         // Set the random position as the destination
-        // Check if navMeshAgent is not null before calling SetDestination
-        if (_navMeshAgent.isOnNavMesh)
+        _navMeshAgent.SetDestination(randomPosition);
+    }
+    void DisappearReappear()
+    {
+        disappearTimer += Time.deltaTime;
+
+        if(!isDisappeared && disappearTimer >= disappearTime)
         {
-            _navMeshAgent.SetDestination(randomPosition);
+            isDisappeared = true;
+            disappearTimer = 0f;
+            firstChildMonster.SetActive(false);
         }
-        else
+        else if(isDisappeared && disappearTimer >= appearTime)
         {
-            Debug.LogError("NavMeshAgent is null or not on the NavMesh.");
+            isDisappeared = false;
+            disappearTimer = 0f;
+            firstChildMonster.SetActive(true);
         }
     }
 
-    // Replace roomSize with the actual size of your room
-    private Vector3 roomSize = new Vector3(50f, 0f, 50f);
 }

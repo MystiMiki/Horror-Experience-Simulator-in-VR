@@ -276,14 +276,15 @@ public class roomGenerator : MonoBehaviour
                 // Create the ceiling
                 CreateWall(_grid[currentX, currentY], ceilingPrefab, new Vector3(0f, _ceilingHeight, 0f), Quaternion.identity, "Ceiling");
                 SpawnFlashlightOrBattery();
-                if (SimulatorSettings.documents) SetClipboardText();            
-               }
+                SetClipboardText(); 
+            }
 
             // Mark the last doors for further processing
             Transform door = _grid[_path[_path.Count - 2].x, _path[_path.Count - 2].y].transform.Find("Door");
             door.name = "LastDoor";
 
             BakeNavMesh();
+            SetMonster();
         }
         catch (Exception ex)
         {
@@ -322,7 +323,7 @@ public class roomGenerator : MonoBehaviour
         }
 
         Debug.Log("NavMesh baked successfully!");
-    }
+    }   
 
     void SpawnFlashlightOrBattery()
     {
@@ -353,40 +354,127 @@ public class roomGenerator : MonoBehaviour
 
     void SetClipboardText()
     {
-        try
+        if (SimulatorSettings.documents)
         {
-            GameObject[] clipboardObjects = GameObject.FindGameObjectsWithTag("Clipboard");
-            Shuffle(clipboardObjects);
-
-            // Loop through each found object
-            foreach (GameObject obj in clipboardObjects)
+            try
             {
-                string parentName = obj.transform.parent.name;
+                GameObject[] clipboardObjects = GameObject.FindGameObjectsWithTag("Clipboard");
+                Shuffle(clipboardObjects);
 
-                // Try to find the TextMeshPro component in children of the clipboard object
-                TextMeshProUGUI clipboardText = obj.GetComponentInChildren<TextMeshProUGUI>();
-
-                if (clipboardText != null)
+                // Loop through each found object
+                foreach (GameObject obj in clipboardObjects)
                 {
-                    if (LoadPlayerDocuments.textAssets.Count > 0)
-                    {
-                        // Set the text from the first element in textAssets
-                        clipboardText.text = LoadPlayerDocuments.textAssets[0].text;
+                    string parentName = obj.transform.parent.name;
 
-                        // Remove the used text from the list
-                        LoadPlayerDocuments.textAssets.RemoveAt(0);
+                    // Try to find the TextMeshPro component in children of the clipboard object
+                    TextMeshProUGUI clipboardText = obj.GetComponentInChildren<TextMeshProUGUI>();
+
+                    if (clipboardText != null)
+                    {
+                        if (LoadPlayerDocuments.textAssets.Count > 0)
+                        {
+                            // Set the text from the first element in textAssets
+                            clipboardText.text = LoadPlayerDocuments.textAssets[0].text;
+
+                            // Remove the used text from the list
+                            LoadPlayerDocuments.textAssets.RemoveAt(0);
+                        }
+                    }
+                    else
+                    {
+                        Debug.LogError("TextMeshPro component not found in children of the clipboard object!");
                     }
                 }
-                else
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"An error occurred in the SetClipboardText method: {ex.Message}");
+            }
+        }
+    }
+
+    void SetMonster()
+    {
+        if (SimulatorSettings.spiders || SimulatorSettings.scavenger || SimulatorSettings.mutatedInsect)
+        {         
+            try
+            {
+                for (int i = 0; i < _path.Count - 1; i++)
                 {
-                    Debug.LogError("TextMeshPro component not found in children of the clipboard object!");
+                    int currentX = _path[i].x;
+                    int currentY = _path[i].y;
+
+                    // Get the room GameObject
+                    GameObject room = _grid[currentX, currentY];
+
+                    // Disable monsters not allowed in SimulatorSettings
+                    DisableMonstersNotInSettings(room);
+
+                    // Enable one random type of monster in the room
+                    EnableRandomMonsterInRoom(room);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"An error occurred in the SetMonster method: {ex.Message}");
+            }
+        }
+    }
+
+    void DisableMonstersNotInSettings(GameObject room)
+    {
+        // Iterate through all children of the room
+        foreach (Transform child in room.transform)
+        {
+            // Check if the child is a monster
+            if (child.CompareTag("Monster"))
+            {
+                string monsterName = child.name;
+
+                // Disable monsters not allowed in SimulatorSettings
+                if ((monsterName == "Spider" && !SimulatorSettings.spiders) ||
+                    (monsterName == "Scavenger" && !SimulatorSettings.scavenger) ||
+                    (monsterName == "MutatedInsect" && !SimulatorSettings.mutatedInsect))
+                {
+                    child.gameObject.SetActive(false);
                 }
             }
         }
-        catch (Exception ex)
+    }
+
+    void EnableRandomMonsterInRoom(GameObject room)
+    {
+        // Get a list of monsters in the room
+        List<Transform> monstersInRoom = new List<Transform>();
+        foreach (Transform child in room.transform)
         {
-            Debug.LogError($"An error occurred in the SetClipboardText method: {ex.Message}");
+            if (child.CompareTag("Monster") && child.gameObject.activeSelf)
+            {
+                monstersInRoom.Add(child);
+            }
+        }
+
+        // If there are monsters in the room, enable one random type
+        if (monstersInRoom.Count > 0)
+        {
+            // Choose a random monster from the list
+            Transform selectedMonster = monstersInRoom[UnityEngine.Random.Range(0, monstersInRoom.Count)];
+
+            // Enable only the chosen monster
+            foreach (Transform monster in monstersInRoom)
+            {
+                if (monster.name == selectedMonster.name)
+                {
+                    NavMeshAgent navMeshAgent = monster.GetComponent<NavMeshAgent>();
+                    navMeshAgent.enabled = true;
+                }
+                else
+                {
+                    monster.gameObject.SetActive(false);
+                }
+            }
         }
     }
+
 
 }
