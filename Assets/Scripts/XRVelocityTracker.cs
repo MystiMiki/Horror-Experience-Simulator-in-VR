@@ -101,12 +101,18 @@ public class XRVelocityTracker : MonoBehaviour
         using (StreamWriter file = new StreamWriter(filePath))
         {
             // Write header
-            file.WriteLine("Timestamp,HeadsetVelocityX,HeadsetVelocityY,HeadsetVelocityZ,LeftControllerVelocityX,LeftControllerVelocityY,LeftControllerVelocityZ,RightControllerVelocityX,RightControllerVelocityY,RightControllerVelocityZ");
+            file.WriteLine("Timestamp;" +
+                "HeadsetVelocityX;HeadsetVelocityY;HeadsetVelocityZ;" +
+                "LeftControllerVelocityX;LeftControllerVelocityY;LeftControllerVelocityZ;" +
+                "RightControllerVelocityX;RightControllerVelocityY;RightControllerVelocityZ");
 
             // Write velocity data
             foreach (VelocityData velocityData in velocities)
             {
-                file.WriteLine($"{velocityData.timestamp.ToString().Split(',')[0]},{velocityData.headsetVelocity.x},{velocityData.headsetVelocity.y},{velocityData.headsetVelocity.z},{velocityData.leftControllerVelocity.x},{velocityData.leftControllerVelocity.y},{velocityData.leftControllerVelocity.z},{velocityData.rightControllerVelocity.x},{velocityData.rightControllerVelocity.y},{velocityData.rightControllerVelocity.z}");
+                file.WriteLine($"{velocityData.timestamp.ToString().Split(',')[0]};" +
+                    $"{velocityData.headsetVelocity.x};{velocityData.headsetVelocity.y};{velocityData.headsetVelocity.z};" +
+                    $"{velocityData.leftControllerVelocity.x};{velocityData.leftControllerVelocity.y};{velocityData.leftControllerVelocity.z};" +
+                    $"{velocityData.rightControllerVelocity.x};{velocityData.rightControllerVelocity.y};{velocityData.rightControllerVelocity.z}");
             }
         }
     }
@@ -129,7 +135,7 @@ public class XRVelocityTracker : MonoBehaviour
     }
 
     // OnDestroy is called when the GameObject is being destroyed
-    void OnDestroy()
+    void OnDisable()
     {
         // Call SaveDataToCSV when the GameObject is destroyed
         SaveDataToCSV();

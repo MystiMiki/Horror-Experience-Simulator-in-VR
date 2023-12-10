@@ -6,11 +6,6 @@ Classification: Unknown
 Research Log #666
 ---
 
-Abstract:
-
-Project Phantasmal Enigma centers around the study of Entity X-13, an enigmatic and malevolent force that defies conventional understanding. Its origins, motivations, and capabilities remain shrouded in mystery.
----
-
 Description:
 
 Entity X-13 is a spectral anomaly that materializes within virtual reality constructs. Its presence is marked by an eerie distortion of the digital environment, accompanied by unsettling whispers and anomalous visual phenomena.
@@ -38,6 +33,4 @@ Preliminary investigations suggest a connection between Entity X-13 and ancient 
 Warning:
 
 Exposure to Entity X-13 may lead to severe psychological distress, including vivid nightmares, hallucinations, and temporary disorientation. Participants are advised to undergo psychological debriefing post-experimentation.
----
 
-This document is a work of fiction. Any resemblance to actual entities, living or dead, or actual events is purely coincidental.

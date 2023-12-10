@@ -88,12 +88,18 @@ public class XRPositionTracker : MonoBehaviour
         using (StreamWriter file = new StreamWriter(filePath))
         {
             // Write header
-            file.WriteLine("Timestamp,HeadsetPositionX,HeadsetPositionY,HeadsetPositionZ,LeftControllerPositionX,LeftControllerPositionY,LeftControllerPositionZ,RightControllerPositionX,RightControllerPositionY,RightControllerPositionZ");
+            file.WriteLine("Timestamp;" +
+                "HeadsetPositionX;HeadsetPositionY;HeadsetPositionZ;" +
+                "LeftControllerPositionX;LeftControllerPositionY;LeftControllerPositionZ;" +
+                "RightControllerPositionX;RightControllerPositionY;RightControllerPositionZ");
 
             // Write position data
             foreach (PositionData positionData in positions)
             {
-                file.WriteLine($"{positionData.timestamp.ToString().Split(',')[0]},{positionData.headsetPosition.x},{positionData.headsetPosition.y},{positionData.headsetPosition.z},{positionData.leftControllerPosition.x},{positionData.leftControllerPosition.y},{positionData.leftControllerPosition.z},{positionData.rightControllerPosition.x},{positionData.rightControllerPosition.y},{positionData.rightControllerPosition.z}");
+                file.WriteLine($"{positionData.timestamp.ToString().Split(',')[0]};" +
+                    $"{positionData.headsetPosition.x};{positionData.headsetPosition.y};{positionData.headsetPosition.z};" +
+                    $"{positionData.leftControllerPosition.x};{positionData.leftControllerPosition.y};{positionData.leftControllerPosition.z};" +
+                    $"{positionData.rightControllerPosition.x};{positionData.rightControllerPosition.y};{positionData.rightControllerPosition.z}");
             }
         }
     }
@@ -116,7 +122,7 @@ public class XRPositionTracker : MonoBehaviour
     }
 
     // OnDestroy is called when the GameObject is being destroyed
-    void OnDestroy()
+    void OnDisable()
     {
         // Call SaveDataToCSV when the GameObject is destroyed
         SaveDataToCSV();

@@ -45,7 +45,6 @@ public class FlashlightController : MonoBehaviour
             if (_drainRate > 0)
             {
                 batteryLife -= _drainRate * Time.deltaTime;
-                Debug.Log("Battery: " + batteryLife);
             }
         }
         else if (_isDead && _light.intensity > 0)

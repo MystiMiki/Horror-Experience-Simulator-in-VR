@@ -21,7 +21,6 @@ public class XRGazeTracker : MonoBehaviour
     void Update()
     {
         // Get the player's head position and forward direction
-        Vector3 headsetPosition = GetDevicePosition(XRNode.Head);
         Vector3 gazeDirection = GetGazeDirection();
 
         // Normalize the gaze direction vector
@@ -43,20 +42,6 @@ public class XRGazeTracker : MonoBehaviour
         }
 
         // Your additional logic or checks here based on your game requirements
-    }
-
-    // Function to get the position of the player's head
-    Vector3 GetDevicePosition(XRNode node)
-    {
-        Vector3 devicePosition = Vector3.zero;
-
-        InputDevice device = InputDevices.GetDeviceAtXRNode(node);
-        if (device.isValid)
-        {
-            device.TryGetFeatureValue(CommonUsages.devicePosition, out devicePosition);
-        }
-
-        return devicePosition;
     }
 
     // Function to get the gaze direction of the player
@@ -103,12 +88,18 @@ public class XRGazeTracker : MonoBehaviour
         using (StreamWriter file = new StreamWriter(filePath))
         {
             // Write header
-            file.WriteLine("Timestamp,NormalizedGazeDirectionX,NormalizedGazeDirectionY,NormalizedGazeDirectionZ");
+            file.WriteLine("Timestamp;" +
+                "NormalizedGazeDirectionX;" +
+                "NormalizedGazeDirectionY;" +
+                "NormalizedGazeDirectionZ");
 
             // Write gaze data
             foreach (GazeData gazeDataEntry in gazeData)
             {
-                file.WriteLine($"{gazeDataEntry.timestamp.ToString().Split(',')[0]},{gazeDataEntry.normalizedGazeDirection.x},{gazeDataEntry.normalizedGazeDirection.y},{gazeDataEntry.normalizedGazeDirection.z}");
+                file.WriteLine($"{gazeDataEntry.timestamp.ToString().Split(',')[0]};" +
+                    $"{gazeDataEntry.normalizedGazeDirection.x};" +
+                    $"{gazeDataEntry.normalizedGazeDirection.y};" +
+                    $"{gazeDataEntry.normalizedGazeDirection.z}");
             }
         }
     }
@@ -127,7 +118,7 @@ public class XRGazeTracker : MonoBehaviour
     }
 
     // OnDestroy is called when the GameObject is being destroyed
-    void OnDestroy()
+    void OnDisable()
     {
         // Call SaveDataToCSV when the GameObject is destroyed
         SaveDataToCSV();

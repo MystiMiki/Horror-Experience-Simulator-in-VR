@@ -364,7 +364,7 @@ public class roomGenerator : MonoBehaviour
                 // Loop through each found object
                 foreach (GameObject obj in clipboardObjects)
                 {
-                    string parentName = obj.transform.parent.name;
+                    string parentName = obj.transform.parent.name;                    
 
                     // Try to find the TextMeshPro component in children of the clipboard object
                     TextMeshProUGUI clipboardText = obj.GetComponentInChildren<TextMeshProUGUI>();

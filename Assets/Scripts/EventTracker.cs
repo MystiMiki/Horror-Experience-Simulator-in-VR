@@ -18,7 +18,7 @@ public class EventTracker : MonoBehaviour
 
     void Update()
     {
-        // Calculate the timestamp based on the time difference between now and when the scene was loaded
+        // Calculate the timestamp 
         float timestamp = (float)(DateTime.Now - sceneLoadTime).TotalSeconds - 1;
 
         // Accumulate the elapsed time
@@ -74,12 +74,12 @@ public class EventTracker : MonoBehaviour
         using (StreamWriter file = new StreamWriter(filePath))
         {
             // Write header
-            file.WriteLine("Timestamp,Event");
+            file.WriteLine("Timestamp;Event");
 
             // Write event data
             foreach (EventData eventData in events)
             {
-                file.WriteLine($"{eventData.timestamp.ToString().Split(',')[0]},{eventData.eventName}");
+                file.WriteLine($"{eventData.timestamp.ToString().Split(',')[0]};{eventData.eventName}");
             }
         }
     }
@@ -98,7 +98,7 @@ public class EventTracker : MonoBehaviour
     }
 
     // OnDestroy is called when the GameObject is being destroyed
-    void OnDestroy()
+    void OnDisable()
     {
         // Call SaveDataToCSV when the GameObject is destroyed
         SaveDataToCSV();

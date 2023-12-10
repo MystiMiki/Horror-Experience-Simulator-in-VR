@@ -24,7 +24,10 @@ public class SimulatorSettings : MonoBehaviour
                 numberOfRooms = value;
                 Debug.Log("Number of rooms is valid: " + value + ".");
             }
-            Debug.Log("Number is too high.");
+            else
+            {
+                Debug.Log("Number is too high.");
+            }
         }
         else
         {

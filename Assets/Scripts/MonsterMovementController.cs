@@ -28,7 +28,7 @@ public class MonsterMovementController : MonoBehaviour
 
         if (gameObject.name == "Scavenger")
         {
-            // Find the first child of the TwitchyStalker
+            // Find the first child of the Scavenger
             Transform[] children = GetComponentsInChildren<Transform>();
             if (children.Length > 1) // Ensure there is at least one child
             {
@@ -36,7 +36,7 @@ public class MonsterMovementController : MonoBehaviour
             }
             else
             {
-                Debug.LogError("TwitchyStalker has no child monsters!");
+                Debug.LogError("Scavenger has no child monsters!");
             }
         }
     }
