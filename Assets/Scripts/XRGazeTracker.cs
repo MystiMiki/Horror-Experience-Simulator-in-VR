@@ -7,15 +7,15 @@ using System.IO;
 
 public class XRGazeTracker : MonoBehaviour
 {
-    private List<GazeData> gazeDataList = new List<GazeData>();
-    private DateTime sceneLoadTime;
-    private float timeSinceLastSave = 0f;
-    private float saveInterval = 1f; // Set the save interval to 1 second
+    private List<GazeData> _gazeDataList = new List<GazeData>();
+    private DateTime _sceneLoadTime;
+    private float _timeSinceLastSave = 0f;
+    private const float _saveInterval = 1f; // Set the save interval to 1 second
 
     void Start()
     {
         // Record the time when the scene is loaded
-        sceneLoadTime = DateTime.Now;
+        _sceneLoadTime = DateTime.Now;
     }
 
     void Update()
@@ -27,18 +27,18 @@ public class XRGazeTracker : MonoBehaviour
         Vector3 normalizedGazeDirection = gazeDirection.normalized;
 
         // Calculate the timestamp based on the time difference between now and when the scene was loaded
-        float timestamp = (float)(DateTime.Now - sceneLoadTime).TotalSeconds - 1;
+        float timestamp = (float)(DateTime.Now - _sceneLoadTime).TotalSeconds + 1;
 
         // Accumulate the elapsed time
-        timeSinceLastSave += Time.deltaTime;
+        _timeSinceLastSave += Time.deltaTime;
 
         // Check if the save interval has passed
-        if (timeSinceLastSave >= saveInterval)
+        if (_timeSinceLastSave >= _saveInterval)
         {
             // Save data every second
-            gazeDataList.Add(new GazeData(timestamp, normalizedGazeDirection));
+            _gazeDataList.Add(new GazeData(timestamp, normalizedGazeDirection));
             // Reset the timer
-            timeSinceLastSave = 0f;
+            _timeSinceLastSave = 0f;
         }
 
         // Your additional logic or checks here based on your game requirements
@@ -59,7 +59,7 @@ public class XRGazeTracker : MonoBehaviour
     // Call this function when the level is finished to save data to CSV
     public void SaveDataToCSV()
     {
-        GazeData[] gazeDataArray = gazeDataList.ToArray();
+        GazeData[] gazeDataArray = _gazeDataList.ToArray();
 
         // Define the directory path
         string directoryPath = Path.Combine(Application.dataPath, "Data", "Gaze");
@@ -71,14 +71,14 @@ public class XRGazeTracker : MonoBehaviour
         }
 
         // Generate a unique filename using the scene load time
-        string filename = $"gazeData_{sceneLoadTime:yyyyMMdd_HHmmss}.csv";
+        string filename = $"gazeData_{_sceneLoadTime:yyyyMMdd_HHmmss}.csv";
         string filePath = Path.Combine(directoryPath, filename);
 
         // Use a CSV writing function to write the data to a CSV file
         WriteToCSV(filePath, gazeDataArray);
 
         // Clear the data list after saving
-        gazeDataList.Clear();
+        _gazeDataList.Clear();
     }
 
     // Function to write data to a CSV file

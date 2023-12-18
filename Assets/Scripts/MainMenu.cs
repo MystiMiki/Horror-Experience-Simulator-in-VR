@@ -7,12 +7,7 @@ public class MainMenu : MonoBehaviour
 {
     public void Play()
     {
-
-        if (SimulatorSettings.numberOfRooms != 0) {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
-        }
-        else
-            Debug.Log("Not all requested values where filled. ");
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }
 
     public void Exit()
@@ -20,5 +15,4 @@ public class MainMenu : MonoBehaviour
         Application.Quit();
         Debug.Log("Player has quit the game.");
     }
-
 }

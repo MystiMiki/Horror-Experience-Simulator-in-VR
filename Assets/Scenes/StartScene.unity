@@ -6739,7 +6739,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 585218075}
         m_TargetAssemblyTypeName: SimulatorSettings, Assembly-CSharp
-        m_MethodName: Documents
+        m_MethodName: Keys
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

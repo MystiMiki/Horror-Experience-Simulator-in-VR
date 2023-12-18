@@ -194,18 +194,18 @@ public class roomGenerator : MonoBehaviour
             }
 
             // Generate walls along the _path
-            GenerateWalls();
+            GeneratePrefabs();
 
             // Print the final _path to the console
             Debug.Log(pathDescription);
         }
         else
         {
-            Debug.Log("No valid path found.");
+            Debug.LogError("No valid path found.");
         }
     }
 
-    void GenerateWalls()
+    void GeneratePrefabs()
     {
         // Generate walls around the plane with remembering the door in the previous room
         try
@@ -292,10 +292,10 @@ public class roomGenerator : MonoBehaviour
         }
     }
 
-    void CreateWall(GameObject node, GameObject prefab, Vector3 localPosition, Quaternion rotation, string name)
+    void CreateWall(GameObject node, GameObject prefab, Vector3 localPosition, Quaternion rotation, string previousDoorDirection)
     {     
         // Separate method to create one wall according to the given attributes
-        if (name != _previousDoorDirection)
+        if (previousDoorDirection != _previousDoorDirection)
         {
             GameObject wall = Instantiate(prefab, transform);
             wall.transform.SetParent(node.transform);

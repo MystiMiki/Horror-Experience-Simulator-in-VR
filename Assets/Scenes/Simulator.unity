@@ -421,7 +421,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_GroupName: Left
-  m_InteractionManager: {fileID: 0}
+  m_InteractionManager: {fileID: 71938490}
   m_StartingGroupMembers:
   - {fileID: 1339688644}
   - {fileID: 910356772}
@@ -2244,6 +2244,7 @@ GameObject:
   - component: {fileID: 1113368004}
   - component: {fileID: 1113368005}
   - component: {fileID: 1113368006}
+  - component: {fileID: 1113368007}
   m_Layer: 0
   m_Name: Monitor And Save Data
   m_TagString: Untagged
@@ -2312,6 +2313,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5147be1db75bd8f4c8e924c77e709e76, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1113368007
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1113368001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 74316db55a333f541b84ef3d98ebb4f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1339688642
@@ -2507,7 +2520,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_GroupName: Right
-  m_InteractionManager: {fileID: 0}
+  m_InteractionManager: {fileID: 71938490}
   m_StartingGroupMembers:
   - {fileID: 1534314981}
   - {fileID: 845965812}

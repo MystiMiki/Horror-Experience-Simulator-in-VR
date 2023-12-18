@@ -7,15 +7,15 @@ using System.IO;
 
 public class XRPositionTracker : MonoBehaviour
 {
-    private List<PositionData> positionDataList = new List<PositionData>();
-    private DateTime sceneLoadTime;
-    private float timeSinceLastSave = 0f;
-    private float saveInterval = 1f; // Set the save interval to 1 second
+    private List<PositionData> _positionDataList = new List<PositionData>();
+    private DateTime _sceneLoadTime;
+    private float _timeSinceLastSave = 0f;
+    private float _saveInterval = 1f; // Set the save interval to 1 second
 
     void Start()
     {
         // Record the time when the scene is loaded
-        sceneLoadTime = DateTime.Now;
+        _sceneLoadTime = DateTime.Now;
     }
 
     void Update()
@@ -25,18 +25,18 @@ public class XRPositionTracker : MonoBehaviour
         Vector3 rightControllerPosition = GetDevicePosition(XRNode.RightHand);
 
         // Calculate the timestamp based on the time difference between now and when the scene was loaded
-        float timestamp = (float)(DateTime.Now - sceneLoadTime).TotalSeconds - 1;
+        float timestamp = (float)(DateTime.Now - _sceneLoadTime).TotalSeconds + 1;
 
         // Accumulate the elapsed time
-        timeSinceLastSave += Time.deltaTime;
+        _timeSinceLastSave += Time.deltaTime;
 
         // Check if the save interval has passed
-        if (timeSinceLastSave >= saveInterval)
+        if (_timeSinceLastSave >= _saveInterval)
         {
             // Save data every second
-            positionDataList.Add(new PositionData(timestamp, headsetPosition, leftControllerPosition, rightControllerPosition));
+            _positionDataList.Add(new PositionData(timestamp, headsetPosition, leftControllerPosition, rightControllerPosition));
             // Reset the timer
-            timeSinceLastSave = 0f;
+            _timeSinceLastSave = 0f;
         }
 
         // Your additional logic or checks here based on your game requirements
@@ -59,10 +59,10 @@ public class XRPositionTracker : MonoBehaviour
     // Call this function when the level is finished to save data to CSV
     public void SaveDataToCSV()
     {
-        PositionData[] positionDataArray = positionDataList.ToArray();
+        PositionData[] positionDataArray = _positionDataList.ToArray();
 
         // Define the directory path
-        string directoryPath = Path.Combine(Application.dataPath, "Data", "Kinematic");
+        string directoryPath = Path.Combine(Application.dataPath, "Data", "Position");
 
         // Create the directory if it doesn't exist
         if (!Directory.Exists(directoryPath))
@@ -71,14 +71,14 @@ public class XRPositionTracker : MonoBehaviour
         }
 
         // Generate a unique filename using the scene load time
-        string filename = $"positionData_{sceneLoadTime:yyyyMMdd_HHmmss}.csv";
+        string filename = $"positionData_{_sceneLoadTime:yyyyMMdd_HHmmss}.csv";
         string filePath = Path.Combine(directoryPath, filename);
 
         // Use a CSV writing function to write the data to a CSV file
         WriteToCSV(filePath, positionDataArray);
 
         // Clear the data list after saving
-        positionDataList.Clear();
+        _positionDataList.Clear();
     }
 
     // Function to write data to a CSV file

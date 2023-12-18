@@ -7,18 +7,18 @@ using System.IO;
 
 public class XRVelocityTracker : MonoBehaviour
 {
-    private List<VelocityData> velocityDataList = new List<VelocityData>();
-    private DateTime sceneLoadTime;
-    private Vector3 lastHeadsetPosition;
-    private Vector3 lastLeftControllerPosition;
-    private Vector3 lastRightControllerPosition;
-    private float timeSinceLastSave = 0f;
-    private float saveInterval = 1f; // Set the save interval to 1 second
+    private List<VelocityData> _velocityDataList = new List<VelocityData>();
+    private DateTime _sceneLoadTime;
+    private Vector3 _lastHeadsetPosition;
+    private Vector3 _lastLeftControllerPosition;
+    private Vector3 _lastRightControllerPosition;
+    private float _timeSinceLastSave = 0f;
+    private const float _saveInterval = 1f; // Set the save interval to 1 second
 
     void Start()
     {
         // Record the time when the scene is loaded
-        sceneLoadTime = DateTime.Now;
+        _sceneLoadTime = DateTime.Now;
     }
 
     void Update()
@@ -28,29 +28,29 @@ public class XRVelocityTracker : MonoBehaviour
         Vector3 rightControllerPosition = GetDevicePosition(XRNode.RightHand);
 
         // Calculate the timestamp based on the time difference between now and when the scene was loaded
-        float timestamp = (float)(DateTime.Now - sceneLoadTime).TotalSeconds - 1;
+        float timestamp = (float)(DateTime.Now - _sceneLoadTime).TotalSeconds + 1;
 
         // Calculate velocity for each axis
-        Vector3 headsetVelocity = (headsetPosition - lastHeadsetPosition) / Time.deltaTime;
-        Vector3 leftControllerVelocity = (leftControllerPosition - lastLeftControllerPosition) / Time.deltaTime;
-        Vector3 rightControllerVelocity = (rightControllerPosition - lastRightControllerPosition) / Time.deltaTime;
+        Vector3 headsetVelocity = (headsetPosition - _lastHeadsetPosition) / Time.deltaTime;
+        Vector3 leftControllerVelocity = (leftControllerPosition - _lastLeftControllerPosition) / Time.deltaTime;
+        Vector3 rightControllerVelocity = (rightControllerPosition - _lastRightControllerPosition) / Time.deltaTime;
 
         // Accumulate the elapsed time
-        timeSinceLastSave += Time.deltaTime;
+        _timeSinceLastSave += Time.deltaTime;
 
         // Check if the save interval has passed
-        if (timeSinceLastSave >= saveInterval)
+        if (_timeSinceLastSave >= _saveInterval)
         {
             // Save data every second
-            velocityDataList.Add(new VelocityData(timestamp, headsetVelocity, leftControllerVelocity, rightControllerVelocity));
+            _velocityDataList.Add(new VelocityData(timestamp, headsetVelocity, leftControllerVelocity, rightControllerVelocity));
             // Reset the timer
-            timeSinceLastSave = 0f;
+            _timeSinceLastSave = 0f;
         }
 
         // Update last positions for the next frame
-        lastHeadsetPosition = headsetPosition;
-        lastLeftControllerPosition = leftControllerPosition;
-        lastRightControllerPosition = rightControllerPosition;
+        _lastHeadsetPosition = headsetPosition;
+        _lastLeftControllerPosition = leftControllerPosition;
+        _lastRightControllerPosition = rightControllerPosition;
 
         // Your additional logic or checks here based on your game requirements
     }
@@ -72,10 +72,10 @@ public class XRVelocityTracker : MonoBehaviour
     // Call this function when the level is finished to save data to CSV
     public void SaveDataToCSV()
     {
-        VelocityData[] velocityDataArray = velocityDataList.ToArray();
+        VelocityData[] velocityDataArray = _velocityDataList.ToArray();
 
         // Define the directory path
-        string directoryPath = Path.Combine(Application.dataPath, "Data", "Dynamic");
+        string directoryPath = Path.Combine(Application.dataPath, "Data", "Velocity");
 
         // Create the directory if it doesn't exist
         if (!Directory.Exists(directoryPath))
@@ -84,14 +84,14 @@ public class XRVelocityTracker : MonoBehaviour
         }
 
         // Generate a unique filename using the scene load time
-        string filename = $"velocityData_{sceneLoadTime:yyyyMMdd_HHmmss}.csv";
+        string filename = $"velocityData_{_sceneLoadTime:yyyyMMdd_HHmmss}.csv";
         string filePath = Path.Combine(directoryPath, filename);
 
         // Use a CSV writing function to write the data to a CSV file
         WriteToCSV(filePath, velocityDataArray);
 
         // Clear the data list after saving
-        velocityDataList.Clear();
+        _velocityDataList.Clear();
     }
 
     // Function to write data to a CSV file
