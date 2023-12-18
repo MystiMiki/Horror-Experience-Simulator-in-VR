@@ -5,7 +5,20 @@ using UnityEngine.XR;
 using UnityEngine.XR.Interaction.Toolkit;
 using System.IO;
 
-public class XRGazeTracker : MonoBehaviour
+// Data structure to store gaze direction, timestamp, and other relevant data
+public struct GazeData
+{
+    public float timestamp;
+    public Vector3 normalizedGazeDirection;
+
+    public GazeData(float timestamp, Vector3 normalizedGazeDirection)
+    {
+        this.timestamp = timestamp;
+        this.normalizedGazeDirection = normalizedGazeDirection;
+    }
+}
+
+public class XRGazeTracker : SaveToCSV<GazeData>
 {
     private List<GazeData> _gazeDataList = new List<GazeData>();
     private DateTime _sceneLoadTime;
@@ -27,7 +40,7 @@ public class XRGazeTracker : MonoBehaviour
         Vector3 normalizedGazeDirection = gazeDirection.normalized;
 
         // Calculate the timestamp based on the time difference between now and when the scene was loaded
-        float timestamp = (float)(DateTime.Now - _sceneLoadTime).TotalSeconds + 1;
+        float timestamp = (float)(DateTime.Now - _sceneLoadTime).TotalSeconds;
 
         // Accumulate the elapsed time
         _timeSinceLastSave += Time.deltaTime;
@@ -55,34 +68,9 @@ public class XRGazeTracker : MonoBehaviour
 
         return gazeDirection;
     }
-
-    // Call this function when the level is finished to save data to CSV
-    public void SaveDataToCSV()
-    {
-        GazeData[] gazeDataArray = _gazeDataList.ToArray();
-
-        // Define the directory path
-        string directoryPath = Path.Combine(Application.dataPath, "Data", "Gaze");
-
-        // Create the directory if it doesn't exist
-        if (!Directory.Exists(directoryPath))
-        {
-            Directory.CreateDirectory(directoryPath);
-        }
-
-        // Generate a unique filename using the scene load time
-        string filename = $"gazeData_{_sceneLoadTime:yyyyMMdd_HHmmss}.csv";
-        string filePath = Path.Combine(directoryPath, filename);
-
-        // Use a CSV writing function to write the data to a CSV file
-        WriteToCSV(filePath, gazeDataArray);
-
-        // Clear the data list after saving
-        _gazeDataList.Clear();
-    }
-
+  
     // Function to write data to a CSV file
-    void WriteToCSV(string filePath, GazeData[] gazeData)
+    protected override void WriteToCSV(string filePath, GazeData[] gazeData)
     {
         // Create a new CSV file or overwrite if it already exists
         using (StreamWriter file = new StreamWriter(filePath))
@@ -102,25 +90,12 @@ public class XRGazeTracker : MonoBehaviour
                     $"{gazeDataEntry.normalizedGazeDirection.z}");
             }
         }
-    }
-
-    // Data structure to store gaze direction, timestamp, and other relevant data
-    private struct GazeData
-    {
-        public float timestamp;
-        public Vector3 normalizedGazeDirection;
-
-        public GazeData(float timestamp, Vector3 normalizedGazeDirection)
-        {
-            this.timestamp = timestamp;
-            this.normalizedGazeDirection = normalizedGazeDirection;
-        }
-    }
+    }    
 
     // OnDestroy is called when the GameObject is being destroyed
     void OnDisable()
     {
         // Call SaveDataToCSV when the GameObject is destroyed
-        SaveDataToCSV();
+        SaveDataToCSV("Gaze", _gazeDataList, _sceneLoadTime);
     }
 }

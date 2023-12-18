@@ -3,7 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 
-public class EventTracker : MonoBehaviour
+// Data structure to store event data, timestamp, and other relevant data
+public struct EventData
+{
+    public float timestamp;
+    public string eventName;
+
+    public EventData(float timestamp, string eventName)
+    {
+        this.timestamp = timestamp;
+        this.eventName = eventName;
+    }
+}
+
+public class EventTracker : SaveToCSV<EventData>
 {
     private List<EventData> _eventDataList = new List<EventData>();
     private DateTime _sceneLoadTime;
@@ -19,7 +32,7 @@ public class EventTracker : MonoBehaviour
     void Update()
     {
         // Calculate the timestamp 
-        float timestamp = (float)(DateTime.Now - _sceneLoadTime).TotalSeconds + 1;
+        float timestamp = (float)(DateTime.Now - _sceneLoadTime).TotalSeconds;
 
         // Accumulate the elapsed time
         _timeSinceLastSave += Time.deltaTime;
@@ -42,33 +55,8 @@ public class EventTracker : MonoBehaviour
         }     
     }
 
-    // Call this function when the level is finished to save data to CSV
-    void SaveDataToCSV()
-    {
-        EventData[] eventDataArray = _eventDataList.ToArray();
-
-        // Define the directory path
-        string directoryPath = Path.Combine(Application.dataPath, "Data", "HorrorEvent");
-
-        // Create the directory if it doesn't exist
-        if (!Directory.Exists(directoryPath))
-        {
-            Directory.CreateDirectory(directoryPath);
-        }
-
-        // Generate a unique filename using the scene load time
-        string filename = $"eventData_{_sceneLoadTime:yyyyMMdd_HHmmss}.csv";
-        string filePath = Path.Combine(directoryPath, filename);
-
-        // Use a CSV writing function to write the data to a CSV file
-        WriteToCSV(filePath, eventDataArray);
-
-        // Clear the data list after saving
-        _eventDataList.Clear();
-    }
-
     // Function to write data to a CSV file
-    void WriteToCSV(string filePath, EventData[] events)
+    protected override void WriteToCSV(string filePath, EventData[] events)
     {
         // Create a new CSV file or overwrite if it already exists
         using (StreamWriter file = new StreamWriter(filePath))
@@ -82,25 +70,12 @@ public class EventTracker : MonoBehaviour
                 file.WriteLine($"{eventData.timestamp.ToString().Split(',')[0]};{eventData.eventName}");
             }
         }
-    }
-
-    // Data structure to store event data, timestamp, and other relevant data
-    private struct EventData
-    {
-        public float timestamp;
-        public string eventName;
-
-        public EventData(float timestamp, string eventName)
-        {
-            this.timestamp = timestamp;
-            this.eventName = eventName;
-        }
-    }
+    }   
 
     // OnDestroy is called when the GameObject is being destroyed
     void OnDisable()
     {
         // Call SaveDataToCSV when the GameObject is destroyed
-        SaveDataToCSV();
+        SaveDataToCSV("HorrorEvent", _eventDataList, _sceneLoadTime);
     }
 }

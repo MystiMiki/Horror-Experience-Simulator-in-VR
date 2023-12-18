@@ -5,7 +5,24 @@ using UnityEngine.XR;
 using UnityEngine.XR.Interaction.Toolkit;
 using System.IO;
 
-public class XRPositionTracker : MonoBehaviour
+// Data structure to store position, timestamp, and other relevant data
+public struct PositionData
+{
+    public float timestamp;
+    public Vector3 headsetPosition;
+    public Vector3 leftControllerPosition;
+    public Vector3 rightControllerPosition;
+
+    public PositionData(float timestamp, Vector3 headsetPosition, Vector3 leftControllerPosition, Vector3 rightControllerPosition)
+    {
+        this.timestamp = timestamp;
+        this.headsetPosition = headsetPosition;
+        this.leftControllerPosition = leftControllerPosition;
+        this.rightControllerPosition = rightControllerPosition;
+    }
+}
+
+public class XRPositionTracker : SaveToCSV<PositionData>
 {
     private List<PositionData> _positionDataList = new List<PositionData>();
     private DateTime _sceneLoadTime;
@@ -25,7 +42,7 @@ public class XRPositionTracker : MonoBehaviour
         Vector3 rightControllerPosition = GetDevicePosition(XRNode.RightHand);
 
         // Calculate the timestamp based on the time difference between now and when the scene was loaded
-        float timestamp = (float)(DateTime.Now - _sceneLoadTime).TotalSeconds + 1;
+        float timestamp = (float)(DateTime.Now - _sceneLoadTime).TotalSeconds;
 
         // Accumulate the elapsed time
         _timeSinceLastSave += Time.deltaTime;
@@ -55,34 +72,9 @@ public class XRPositionTracker : MonoBehaviour
 
         return devicePosition;
     }
-
-    // Call this function when the level is finished to save data to CSV
-    public void SaveDataToCSV()
-    {
-        PositionData[] positionDataArray = _positionDataList.ToArray();
-
-        // Define the directory path
-        string directoryPath = Path.Combine(Application.dataPath, "Data", "Position");
-
-        // Create the directory if it doesn't exist
-        if (!Directory.Exists(directoryPath))
-        {
-            Directory.CreateDirectory(directoryPath);
-        }
-
-        // Generate a unique filename using the scene load time
-        string filename = $"positionData_{_sceneLoadTime:yyyyMMdd_HHmmss}.csv";
-        string filePath = Path.Combine(directoryPath, filename);
-
-        // Use a CSV writing function to write the data to a CSV file
-        WriteToCSV(filePath, positionDataArray);
-
-        // Clear the data list after saving
-        _positionDataList.Clear();
-    }
-
+    
     // Function to write data to a CSV file
-    void WriteToCSV(string filePath, PositionData[] positions)
+    protected override void WriteToCSV(string filePath, PositionData[] positions)
     {
         // Create a new CSV file or overwrite if it already exists
         using (StreamWriter file = new StreamWriter(filePath))
@@ -102,29 +94,12 @@ public class XRPositionTracker : MonoBehaviour
                     $"{positionData.rightControllerPosition.x};{positionData.rightControllerPosition.y};{positionData.rightControllerPosition.z}");
             }
         }
-    }
-
-    // Data structure to store position, timestamp, and other relevant data
-    private struct PositionData
-    {
-        public float timestamp;
-        public Vector3 headsetPosition;
-        public Vector3 leftControllerPosition;
-        public Vector3 rightControllerPosition;
-
-        public PositionData(float timestamp, Vector3 headsetPosition, Vector3 leftControllerPosition, Vector3 rightControllerPosition)
-        {
-            this.timestamp = timestamp;
-            this.headsetPosition = headsetPosition;
-            this.leftControllerPosition = leftControllerPosition;
-            this.rightControllerPosition = rightControllerPosition;
-        }
-    }
+    }    
 
     // OnDestroy is called when the GameObject is being destroyed
     void OnDisable()
     {
         // Call SaveDataToCSV when the GameObject is destroyed
-        SaveDataToCSV();
+        SaveDataToCSV("Position", _positionDataList, _sceneLoadTime);
     }
 }

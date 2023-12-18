@@ -6,6 +6,8 @@ TagManager:
   tags:
   - FlashlightOrBattery
   - Clipboard
+  - Monster
+  - Door
   layers:
   - Default
   - TransparentFX
