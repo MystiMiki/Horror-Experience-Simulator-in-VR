@@ -394,30 +394,31 @@ public class roomGenerator : MonoBehaviour
     }
 
     void SetMonster()
-    {
-        if (SimulatorSettings.spiders || SimulatorSettings.scavenger || SimulatorSettings.mutatedInsect)
-        {         
-            try
+    {              
+        try
+        {
+            for (int i = 0; i < _path.Count - 1; i++)
             {
-                for (int i = 0; i < _path.Count - 1; i++)
+                int currentX = _path[i].x;
+                int currentY = _path[i].y;
+
+                // Get the room GameObject
+                GameObject room = _grid[currentX, currentY];
+
+                // Disable monsters not allowed in SimulatorSettings
+                DisableMonstersNotInSettings(room);
+
+                // If at least one monster is allowed in SimulatorSettings
+                if (SimulatorSettings.spiders || SimulatorSettings.scavenger || SimulatorSettings.mutatedInsect)
                 {
-                    int currentX = _path[i].x;
-                    int currentY = _path[i].y;
-
-                    // Get the room GameObject
-                    GameObject room = _grid[currentX, currentY];
-
-                    // Disable monsters not allowed in SimulatorSettings
-                    DisableMonstersNotInSettings(room);
-
                     // Enable one random type of monster in the room
                     EnableRandomMonsterInRoom(room);
                 }
             }
-            catch (Exception ex)
-            {
-                Debug.LogError($"An error occurred in the SetMonster method: {ex.Message}");
-            }
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"An error occurred in the SetMonster method: {ex.Message}");
         }
     }
 
@@ -458,15 +459,18 @@ public class roomGenerator : MonoBehaviour
         if (monstersInRoom.Count > 0)
         {
             // Choose a random monster from the list
-            Transform selectedMonster = monstersInRoom[UnityEngine.Random.Range(0, monstersInRoom.Count)];
+            int randomIndex = UnityEngine.Random.Range(0, monstersInRoom.Count);
+            Transform selectedMonster = monstersInRoom[randomIndex];
+            // Possibility 1:1 that monster will be enabled
+            int random = UnityEngine.Random.Range(0, 2);
 
             // Enable only the chosen monster
             foreach (Transform monster in monstersInRoom)
             {
-                if (monster.name == selectedMonster.name)
-                {
+                if (monster.name == selectedMonster.name && random > 0)
+                { 
                     NavMeshAgent navMeshAgent = monster.GetComponent<NavMeshAgent>();
-                    navMeshAgent.enabled = true;
+                    navMeshAgent.enabled = true;                     
                 }
                 else
                 {
@@ -475,6 +479,4 @@ public class roomGenerator : MonoBehaviour
             }
         }
     }
-
-
 }
