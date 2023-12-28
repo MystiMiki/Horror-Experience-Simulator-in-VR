@@ -1,12 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
-using System;
 using UnityEngine;
+using System;
 using TMPro;
 using UnityEngine.AI;
 using Unity.AI.Navigation;
-
-
 
 public class roomGenerator : MonoBehaviour
 {      
