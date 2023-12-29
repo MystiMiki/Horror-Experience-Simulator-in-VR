@@ -46,7 +46,7 @@ public class XRVelocityTracker : SaveToCSV<VelocityData>
         Vector3 rightControllerPosition = GetDevicePosition(XRNode.RightHand);
 
         // Calculate the timestamp based on the time difference between now and when the scene was loaded
-        float timestamp = (float)(DateTime.Now - _sceneLoadTime).TotalSeconds;
+        float timestamp = (float)(DateTime.Now - _sceneLoadTime).TotalSeconds - 1;
 
         // Calculate velocity for each axis
         Vector3 headsetVelocity = (headsetPosition - _lastHeadsetPosition) / Time.deltaTime;

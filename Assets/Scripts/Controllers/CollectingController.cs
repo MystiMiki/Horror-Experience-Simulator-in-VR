@@ -14,7 +14,13 @@ public class CollectingController : MonoBehaviour
             {
                 if (child.gameObject.CompareTag("Door"))
                 {
-                    //TODO animation enabled
+                    // Unlock the door
+                    Transform doorWing = child.GetChild(1).GetChild(0);
+                    TriggerDoorController doorController = doorWing.GetComponent<TriggerDoorController>();
+                    if (doorController != null)
+                    {
+                        doorController.ToggleLock();
+                    }
                 }
             }            
         }

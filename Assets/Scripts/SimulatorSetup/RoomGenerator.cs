@@ -239,6 +239,7 @@ public class roomGenerator : MonoBehaviour
                 // Create walls as children of the plane
                 if (dx == 1) // Move to the right
                 {
+                    Debug.Log("right");
                     CreateWall(_grid[currentX, currentY], wallPrefab, new Vector3(0f, 0f, halfLength), Quaternion.identity, "Top");
                     CreateWall(_grid[currentX, currentY], wallPrefab, new Vector3(0f, 0f, -halfLength), Quaternion.identity, "Bottom");
                     CreateWall(_grid[currentX, currentY], wallPrefab, new Vector3(-halfWidth, 0f, 0f), Quaternion.Euler(0f, 90f, 0f), "Left");
@@ -247,16 +248,17 @@ public class roomGenerator : MonoBehaviour
                 }
                 else if (dx == -1) // Move to the left
                 {
+                    Debug.Log("left");
                     CreateWall(_grid[currentX, currentY], wallPrefab, new Vector3(0f, 0f, halfLength), Quaternion.identity, "Top");
                     CreateWall(_grid[currentX, currentY], wallPrefab, new Vector3(0f, 0f, -halfLength), Quaternion.identity, "Bottom");
-                    CreateWall(_grid[currentX, currentY], doorPrefab, new Vector3(-halfWidth, 0f, 0f), Quaternion.Euler(0f, -90f, 0f), "Left");
+                    CreateWall(_grid[currentX, currentY], doorPrefab, new Vector3(-halfWidth, 0f, 0f), Quaternion.Euler(0f, 90f, 0f), "Left");
                     CreateWall(_grid[currentX, currentY], wallPrefab, new Vector3(halfWidth, 0f, 0f), Quaternion.Euler(0f, 90f, 0f), "Right");
                     _previousDoorDirection = "Right";
                 }
                 else if (dy == 1) // Move upward
                 {
-
-                    CreateWall(_grid[currentX, currentY], doorPrefab, new Vector3(0f, 0f, halfLength), Quaternion.Euler(0f, -180f, 0f), "Top");
+                    Debug.Log("upward");
+                    CreateWall(_grid[currentX, currentY], doorPrefab, new Vector3(0f, 0f, halfLength), Quaternion.Euler(0f, 180f, 0f), "Top");
                     CreateWall(_grid[currentX, currentY], wallPrefab, new Vector3(0f, 0f, -halfLength), Quaternion.identity, "Bottom");
                     CreateWall(_grid[currentX, currentY], wallPrefab, new Vector3(halfWidth, 0f, 0f), Quaternion.Euler(0f, 90f, 0f), "Right");
                     CreateWall(_grid[currentX, currentY], wallPrefab, new Vector3(-halfWidth, 0f, 0f), Quaternion.Euler(0f, 90f, 0f), "Left");
@@ -264,23 +266,24 @@ public class roomGenerator : MonoBehaviour
                 }
                 else if (dy == -1) // Move downward
                 {
-
+                    Debug.Log("downward");
                     CreateWall(_grid[currentX, currentY], wallPrefab, new Vector3( 0f, 0f, halfLength), Quaternion.identity, "Top");
-                    CreateWall(_grid[currentX, currentY], doorPrefab, new Vector3( 0f, 0f, -halfLength), Quaternion.Euler(0f, -180f, 0f), "Bottom");
+                    CreateWall(_grid[currentX, currentY], doorPrefab, new Vector3( 0f, 0f, -halfLength), Quaternion.Euler(0f, 0f, 0f), "Bottom");
                     CreateWall(_grid[currentX, currentY], wallPrefab, new Vector3( halfWidth, 0f, 0f), Quaternion.Euler(0f, 90f, 0f), "Right");
                     CreateWall(_grid[currentX, currentY], wallPrefab, new Vector3( -halfWidth, 0f, 0f), Quaternion.Euler(0f, 90f, 0f), "Left");
                     _previousDoorDirection = "Top";
                 }
                 // Create the ceiling
-                CreateWall(_grid[currentX, currentY], ceilingPrefab, new Vector3(0f, _ceilingHeight, 0f), Quaternion.identity, "Ceiling");
-                SpawnFlashlightOrBattery();
-                SetClipboardText(); 
+                CreateWall(_grid[currentX, currentY], ceilingPrefab, new Vector3(0f, _ceilingHeight, 0f), Quaternion.identity, "Ceiling");                
             }
 
             // Mark the last doors for further processing
             Transform door = _grid[_path[_path.Count - 2].x, _path[_path.Count - 2].y].transform.Find("Door");
             door.name = "LastDoor";
 
+            SpawnFlashlightOrBattery();
+            SetClipboardText();
+            SetKey();
             BakeNavMesh();
             SetMonster();
         }
@@ -362,8 +365,6 @@ public class roomGenerator : MonoBehaviour
                 // Loop through each found object
                 foreach (GameObject obj in clipboardObjects)
                 {
-                    string parentName = obj.transform.parent.name;                    
-
                     // Try to find the TextMeshPro component in children of the clipboard object
                     TextMeshProUGUI clipboardText = obj.GetComponentInChildren<TextMeshProUGUI>();
 
@@ -389,6 +390,45 @@ public class roomGenerator : MonoBehaviour
                 Debug.LogError($"An error occurred in the SetClipboardText method: {ex.Message}");
             }
         }
+    }
+
+    void SetKey()
+    {
+        GameObject[] keyObjects = GameObject.FindGameObjectsWithTag("Key");
+
+        foreach(GameObject key in keyObjects)
+        {
+            int random = UnityEngine.Random.Range(0, 2);
+            Transform parentTransform = key.transform.parent;
+            if (random == 1)
+            {
+                //Transform parentTransform = transform.parent;
+                Debug.Log($"Door will be locked for {parentTransform.name}");
+                if (parentTransform != null)
+                {
+                    // Find an object by tag
+                    foreach (Transform child in parentTransform)
+                    {
+                        if (child.gameObject.CompareTag("Door"))
+                        {
+                            // Lock the door
+                            Transform doorWing = child.GetChild(1).GetChild(0);
+                            TriggerDoorController doorController = doorWing.GetComponent<TriggerDoorController>();
+                            if (doorController != null)
+                            {
+                                Debug.Log($"Door is locked for {parentTransform.name}");
+                                doorController.ToggleLock();
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                Debug.Log($"Door is not locked for {parentTransform.name}");
+                key.SetActive(false);
+            }
+        }        
     }
 
     void SetMonster()

@@ -7,20 +7,31 @@ public class TriggerDoorController : MonoBehaviour
     [SerializeField] private Animator door = null;
 
     private bool doorClosed = true;
+    private bool isLocked = false;
+
+    public void ToggleLock()
+    {
+        isLocked = !isLocked;        
+    }
 
     public void TriggerDoor()
     {
-        Debug.Log("TriggerDoor");
-        if (doorClosed)
+        if (!isLocked)
         {
-            door.Play("DoorOpen", 0, 0.0f);
-            doorClosed = false;
+            if (doorClosed)
+            {
+                door.Play("DoorOpen", 0, 0.0f);
+                doorClosed = false;
+            }
+            else
+            {
+                door.Play("DoorClose", 0, 0.0f);
+                doorClosed = true;
+            }
         }
         else
         {
-            door.Play("DoorClose", 0, 0.0f);
-            doorClosed = true;
-        }
-
+            door.Play("DoorShake", 0, 0.0f);
+        } 
     }
 }

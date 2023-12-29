@@ -43,7 +43,7 @@ public class XRPositionTracker : SaveToCSV<PositionData>
         Vector3 rightControllerPosition = GetDevicePosition(XRNode.RightHand);
 
         // Calculate the timestamp based on the time difference between now and when the scene was loaded
-        float timestamp = (float)(DateTime.Now - _sceneLoadTime).TotalSeconds;
+        float timestamp = (float)(DateTime.Now - _sceneLoadTime).TotalSeconds - 1;
 
         // Accumulate the elapsed time
         _timeSinceLastSave += Time.deltaTime;

@@ -33,7 +33,7 @@ public class EventTracker : SaveToCSV<EventData>
     void Update()
     {
         // Calculate the timestamp 
-        float timestamp = (float)(DateTime.Now - _sceneLoadTime).TotalSeconds;
+        float timestamp = (float)(DateTime.Now - _sceneLoadTime).TotalSeconds - 1;
 
         // Accumulate the elapsed time
         _timeSinceLastSave += Time.deltaTime;
