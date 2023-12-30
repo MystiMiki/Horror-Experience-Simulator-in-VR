@@ -9,26 +9,33 @@ public abstract class SaveToCSV<T> : MonoBehaviour where T : struct
     // Call this function when the level is finished to save data to CSV
     protected void SaveDataToCSV(string nameOfData, List<T> dataList, DateTime sceneLoadTime)
     {
-        T[] dataArray = dataList.ToArray();
-
-        // Define the directory path
-        string directoryPath = Path.Combine(Application.dataPath, "Data", nameOfData);
-
-        // Create the directory if it doesn't exist
-        if (!Directory.Exists(directoryPath))
+        try
         {
-            Directory.CreateDirectory(directoryPath);
+            T[] dataArray = dataList.ToArray();
+
+            // Define the directory path
+            string directoryPath = Path.Combine(Application.dataPath, "Data", nameOfData);
+
+            // Create the directory if it doesn't exist
+            if (!Directory.Exists(directoryPath))
+            {
+                Directory.CreateDirectory(directoryPath);
+            }
+
+            // Generate a unique filename using the scene load time
+            string filename = $"{nameOfData}Data_{sceneLoadTime:yyyyMMdd_HHmmss}.csv";
+            string filePath = Path.Combine(directoryPath, filename);
+
+            // Use a CSV writing function to write the data to a CSV file
+            WriteToCSV(filePath, dataArray);
+
+            // Clear the data list after saving
+            dataList.Clear();
         }
-
-        // Generate a unique filename using the scene load time
-        string filename = $"{nameOfData}Data_{sceneLoadTime:yyyyMMdd_HHmmss}.csv";
-        string filePath = Path.Combine(directoryPath, filename);
-
-        // Use a CSV writing function to write the data to a CSV file
-        WriteToCSV(filePath, dataArray);
-
-        // Clear the data list after saving
-        dataList.Clear();
+        catch (Exception ex)
+        {
+            Debug.LogError($"An {ex.GetType().Name} error occurred in SaveDataToCSV: {ex.Message}");
+        }
     }
 
     protected abstract void WriteToCSV(string filePath, T[] data);

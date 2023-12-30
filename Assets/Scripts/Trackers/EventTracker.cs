@@ -70,7 +70,7 @@ public class EventTracker : SaveToCSV<EventData>
             {
                 file.WriteLine($"{eventData.timestamp.ToString().Split(',')[0]};{eventData.eventName}");
             }
-        }
+        }      
     }   
 
     // OnDestroy is called when the GameObject is being destroyed

@@ -37,7 +37,7 @@ public class roomGenerator : MonoBehaviour
         }
         catch (Exception ex)
         {
-            Debug.LogError($"An error occurred in the Start method: {ex.Message}");
+            Debug.LogError($"An error occurred: {ex.GetType().Name} - {ex.Message}\n{ex.StackTrace}");
         }
     }
 
@@ -239,7 +239,6 @@ public class roomGenerator : MonoBehaviour
                 // Create walls as children of the plane
                 if (dx == 1) // Move to the right
                 {
-                    Debug.Log("right");
                     CreateWall(_grid[currentX, currentY], wallPrefab, new Vector3(0f, 0f, halfLength), Quaternion.identity, "Top");
                     CreateWall(_grid[currentX, currentY], wallPrefab, new Vector3(0f, 0f, -halfLength), Quaternion.identity, "Bottom");
                     CreateWall(_grid[currentX, currentY], wallPrefab, new Vector3(-halfWidth, 0f, 0f), Quaternion.Euler(0f, 90f, 0f), "Left");
@@ -248,7 +247,6 @@ public class roomGenerator : MonoBehaviour
                 }
                 else if (dx == -1) // Move to the left
                 {
-                    Debug.Log("left");
                     CreateWall(_grid[currentX, currentY], wallPrefab, new Vector3(0f, 0f, halfLength), Quaternion.identity, "Top");
                     CreateWall(_grid[currentX, currentY], wallPrefab, new Vector3(0f, 0f, -halfLength), Quaternion.identity, "Bottom");
                     CreateWall(_grid[currentX, currentY], doorPrefab, new Vector3(-halfWidth, 0f, 0f), Quaternion.Euler(0f, 90f, 0f), "Left");
@@ -257,7 +255,6 @@ public class roomGenerator : MonoBehaviour
                 }
                 else if (dy == 1) // Move upward
                 {
-                    Debug.Log("upward");
                     CreateWall(_grid[currentX, currentY], doorPrefab, new Vector3(0f, 0f, halfLength), Quaternion.Euler(0f, 180f, 0f), "Top");
                     CreateWall(_grid[currentX, currentY], wallPrefab, new Vector3(0f, 0f, -halfLength), Quaternion.identity, "Bottom");
                     CreateWall(_grid[currentX, currentY], wallPrefab, new Vector3(halfWidth, 0f, 0f), Quaternion.Euler(0f, 90f, 0f), "Right");
@@ -266,7 +263,6 @@ public class roomGenerator : MonoBehaviour
                 }
                 else if (dy == -1) // Move downward
                 {
-                    Debug.Log("downward");
                     CreateWall(_grid[currentX, currentY], wallPrefab, new Vector3( 0f, 0f, halfLength), Quaternion.identity, "Top");
                     CreateWall(_grid[currentX, currentY], doorPrefab, new Vector3( 0f, 0f, -halfLength), Quaternion.Euler(0f, 0f, 0f), "Bottom");
                     CreateWall(_grid[currentX, currentY], wallPrefab, new Vector3( halfWidth, 0f, 0f), Quaternion.Euler(0f, 90f, 0f), "Right");
@@ -289,26 +285,27 @@ public class roomGenerator : MonoBehaviour
         }
         catch (Exception ex)
         {
-            Debug.LogError($"An error occurred in the GenerateWalls method: {ex.Message}");
+            Debug.LogError($"An {ex.GetType().Name} error occurred in the GenerateWalls method: {ex.Message}");
         }
     }
 
-    void CreateWall(GameObject node, GameObject prefab, Vector3 localPosition, Quaternion rotation, string previousDoorDirection)
-    {     
+    void CreateWall(GameObject node, GameObject prefab, Vector3 localPosition, Quaternion rotation, string placement)
+    {
         // Separate method to create one wall according to the given attributes
-        if (previousDoorDirection != _previousDoorDirection)
+        if (placement != _previousDoorDirection)
         {
             GameObject wall = Instantiate(prefab, transform);
             wall.transform.SetParent(node.transform);
             wall.transform.localPosition = localPosition;
             wall.transform.localRotation = rotation;
-            if (prefab == doorPrefab) 
+            if (prefab == doorPrefab)
             {
                 wall.name = "Door";
-                Transform doorWing = wall.transform.Find("Cube/jj_door_3_white_weathered/doorWing");
             }
             else
-                wall.name = name;
+            {
+                wall.name = placement;
+            }
         }
     }
 
@@ -328,35 +325,42 @@ public class roomGenerator : MonoBehaviour
 
     void SpawnFlashlightOrBattery()
     {
-        // Find all GameObjects with the tag "FlashlightOrBattery" in the entire hierarchy
-        GameObject[] flashlightOrBatteryObjects = GameObject.FindGameObjectsWithTag("FlashlightOrBattery");
-        Shuffle(flashlightOrBatteryObjects);
-
-        // Loop through each found object
-        foreach (GameObject obj in flashlightOrBatteryObjects)
+        try
         {
-            // Get the parent's name
-            string parentName = obj.transform.parent.name;
+            // Find all GameObjects with the tag "FlashlightOrBattery" in the entire hierarchy
+            GameObject[] flashlightOrBatteryObjects = GameObject.FindGameObjectsWithTag("FlashlightOrBattery");
+            Shuffle(flashlightOrBatteryObjects);
 
-            // Check if the parent's name is "0,0" and activate the flashlight
-            if (parentName == "0,0" && !_flashlightActivated)
+            // Loop through each found object
+            foreach (GameObject obj in flashlightOrBatteryObjects)
             {
-                _flashlightActivated = true;
+                // Get the parent's name
+                string parentName = obj.transform.parent.name;
 
-                // Assuming there's a child named "Flashlight" under the found object
-                GameObject flashlight = obj.transform.Find("Flashlight").gameObject;              
-                flashlight.SetActive(true);
+                // Check if the parent's name is "0,0" and activate the flashlight
+                if (parentName == "0,0" && !_flashlightActivated)
+                {
+                    _flashlightActivated = true;
 
-                GameObject battery = obj.transform.Find("Battery").gameObject;
-                battery.SetActive(false);
-            }            
+                    // Assuming there's a child named "Flashlight" under the found object
+                    GameObject flashlight = obj.transform.Find("Flashlight").gameObject;
+                    flashlight.SetActive(true);
+
+                    GameObject battery = obj.transform.Find("Battery").gameObject;
+                    battery.SetActive(false);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"An {ex.GetType().Name} error occurred in the SpawnFlashlightOrBattery method: {ex.Message}");
         }
     }
 
     void SetClipboardText()
     {
         if (SimulatorSettings.documents)
-        {
+        {       
             try
             {
                 GameObject[] clipboardObjects = GameObject.FindGameObjectsWithTag("Clipboard");
@@ -387,48 +391,59 @@ public class roomGenerator : MonoBehaviour
             }
             catch (Exception ex)
             {
-                Debug.LogError($"An error occurred in the SetClipboardText method: {ex.Message}");
+                Debug.LogError($"An {ex.GetType().Name} error occurred in the SetClipboardText method: {ex.Message}");
             }
         }
     }
 
     void SetKey()
     {
-        GameObject[] keyObjects = GameObject.FindGameObjectsWithTag("Key");
-
-        foreach(GameObject key in keyObjects)
+        try
         {
-            int random = UnityEngine.Random.Range(0, 2);
-            Transform parentTransform = key.transform.parent;
-            if (random == 1)
+            GameObject[] keyObjects = GameObject.FindGameObjectsWithTag("Key");
+
+            foreach (GameObject key in keyObjects)
             {
-                //Transform parentTransform = transform.parent;
-                Debug.Log($"Door will be locked for {parentTransform.name}");
-                if (parentTransform != null)
+                if (SimulatorSettings.keys)
                 {
-                    // Find an object by tag
-                    foreach (Transform child in parentTransform)
+                    int random = UnityEngine.Random.Range(0, 2);
+                    Transform parentTransform = key.transform.parent;
+                    if (random == 1)
                     {
-                        if (child.gameObject.CompareTag("Door"))
+                        //Transform parentTransform = transform.parent;
+                        if (parentTransform != null)
                         {
-                            // Lock the door
-                            Transform doorWing = child.GetChild(1).GetChild(0);
-                            TriggerDoorController doorController = doorWing.GetComponent<TriggerDoorController>();
-                            if (doorController != null)
+                            // Find an object by tag
+                            foreach (Transform child in parentTransform)
                             {
-                                Debug.Log($"Door is locked for {parentTransform.name}");
-                                doorController.ToggleLock();
+                                if (child.gameObject.CompareTag("Door"))
+                                {
+                                    // Lock the door
+                                    Transform doorWing = child.GetChild(1).GetChild(0);
+                                    TriggerDoorController doorController = doorWing.GetComponent<TriggerDoorController>();
+                                    if (doorController != null)
+                                    {
+                                        doorController.ToggleLock();
+                                    }
+                                }
                             }
                         }
                     }
+                    else
+                    {                        
+                        key.SetActive(false);
+                    }
+                }
+                else
+                {
+                    key.SetActive(false);
                 }
             }
-            else
-            {
-                Debug.Log($"Door is not locked for {parentTransform.name}");
-                key.SetActive(false);
-            }
-        }        
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"An {ex.GetType().Name} error occurred in the SetKey method: {ex.Message}");
+        }
     }
 
     void SetMonster()
@@ -456,7 +471,7 @@ public class roomGenerator : MonoBehaviour
         }
         catch (Exception ex)
         {
-            Debug.LogError($"An error occurred in the SetMonster method: {ex.Message}");
+            Debug.LogError($"An {ex.GetType().Name} error occurred in the SetMonster method: {ex.Message}");
         }
     }
 
@@ -475,6 +490,7 @@ public class roomGenerator : MonoBehaviour
                     (monsterName == "Scavenger" && !SimulatorSettings.scavenger) ||
                     (monsterName == "MutatedInsect" && !SimulatorSettings.mutatedInsect))
                 {
+                    Debug.Log($"{monsterName} disabled");
                     child.gameObject.SetActive(false);
                 }
             }
@@ -483,38 +499,45 @@ public class roomGenerator : MonoBehaviour
 
     void EnableRandomMonsterInRoom(GameObject room)
     {
-        // Get a list of monsters in the room
-        List<Transform> monstersInRoom = new List<Transform>();
-        foreach (Transform child in room.transform)
+        try
         {
-            if (child.CompareTag("Monster") && child.gameObject.activeSelf)
+            // Get a list of monsters in the room
+            List<Transform> monstersInRoom = new List<Transform>();
+            foreach (Transform child in room.transform)
             {
-                monstersInRoom.Add(child);
+                if (child.CompareTag("Monster") && child.gameObject.activeSelf)
+                {
+                    monstersInRoom.Add(child);
+                }
+            }
+
+            // If there are monsters in the room, enable one random type
+            if (monstersInRoom.Count > 0)
+            {
+                // Choose a random monster from the list
+                int randomIndex = UnityEngine.Random.Range(0, monstersInRoom.Count);
+                Transform selectedMonster = monstersInRoom[randomIndex];
+                // Possibility 1:1 that monster will be enabled
+                int random = UnityEngine.Random.Range(0, 2);
+
+                // Enable only the chosen monster
+                foreach (Transform monster in monstersInRoom)
+                {
+                    if (monster.name == selectedMonster.name && random > 0)
+                    {
+                        NavMeshAgent navMeshAgent = monster.GetComponent<NavMeshAgent>();
+                        navMeshAgent.enabled = true;
+                    }
+                    else
+                    {
+                        monster.gameObject.SetActive(false);
+                    }
+                }
             }
         }
-
-        // If there are monsters in the room, enable one random type
-        if (monstersInRoom.Count > 0)
+        catch (Exception ex)
         {
-            // Choose a random monster from the list
-            int randomIndex = UnityEngine.Random.Range(0, monstersInRoom.Count);
-            Transform selectedMonster = monstersInRoom[randomIndex];
-            // Possibility 1:1 that monster will be enabled
-            int random = UnityEngine.Random.Range(0, 2);
-
-            // Enable only the chosen monster
-            foreach (Transform monster in monstersInRoom)
-            {
-                if (monster.name == selectedMonster.name && random > 0)
-                { 
-                    NavMeshAgent navMeshAgent = monster.GetComponent<NavMeshAgent>();
-                    navMeshAgent.enabled = true;                     
-                }
-                else
-                {
-                    monster.gameObject.SetActive(false);
-                }
-            }
+            Debug.LogError($"An {ex.GetType().Name} error occurred in EnableRandomMonsterInRoom: {ex.Message}");
         }
     }
 }
